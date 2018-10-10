@@ -2,9 +2,9 @@
 
 /*------------------------------------------------------------------------------
 
-Analisador Léxico
+							Analisador Léxico
 
-		Faz a leitura do arquivo fonte, caracter por caracter,
+	Faz a leitura do arquivo fonte, caracter por caracter,
 			pegando os tokens conforme estabelecido pela gramatica
 
 ------------------------------------------------------------------------------*/
@@ -26,7 +26,7 @@ Token getToken(){
 				STC_Token.ttoken = FOE;
 				strcpy(str_atual, "EOF");
 				str_length = 3;
-				coluna    += 3;
+				coluna    += 4;
 				break;
 		} // if (feof(arq))
 		if (flag_coment){

@@ -9,7 +9,9 @@ void consome_token(TToken consome){
 }
 
 void error(TToken consome){
-    printf("ERRO: esperava %d mas chegou %d\n", consome, token_atual.ttoken);
+    printf("\nError de Compilação:  Linha %d, coluna %d", token_atual.linha,token_atual.coluna);
+    printf("\n\tEsperava \"%s\" mas foi recebido \"%s\"\n\n", decod_Token(consome), token_atual.lexema);
+    fclose(arq);
     exit(0);
 }
 
@@ -333,4 +335,122 @@ void fator(){
       atrib();
       consome_token(FECHAPAR);
   }
+}
+
+char *decod_Token(TToken token){
+      char* aux = malloc(sizeof(char)*16);
+      switch (token) {
+        case 1:
+            strcpy(aux,"Abri Parentese");
+        break;
+        case 2:
+            strcpy(aux,"Fecha Parentese");
+        break;
+        case 3:
+            strcpy(aux,"Virgula");
+        break;
+        case 4:
+            strcpy(aux,"Ponto e Virgula");
+        break;
+        case 5:
+            strcpy(aux,"Final de Arquivo");
+        break;
+        case 6:
+            strcpy(aux,"ERRO");
+        break;
+        case 7:
+            strcpy(aux,"Identificador");
+        break;
+        case 8:
+            strcpy(aux,"String");
+        break;
+        case 9:
+            strcpy(aux,"Sinal de soma(+)");
+        break;
+        case 10:
+            strcpy(aux,"Sinal de subtração (-)");
+        break;
+        case 11:
+            strcpy(aux,"Sinal de Divisão (/)");
+        break;
+        case 12:
+            strcpy(aux,"Atribuição (=)");
+        break;
+        case 13:
+            strcpy(aux,"Sinal de Multiplicação (*)");
+        break;
+        case 14:
+            strcpy(aux,"Igual (==)");
+        break;
+        case 15:
+            strcpy(aux,"Modulo (%)");
+        break;
+        case 16:
+            strcpy(aux,"PRINT");
+        break;
+        case 17:
+            strcpy(aux,"SCAN");
+        break;
+        case 18:
+            strcpy(aux,"&&");
+        break;
+        case 19:
+            strcpy(aux,"Abri chaves");
+        break;
+        case 20:
+            strcpy(aux,"Fecha chaves");
+        break;
+        case 21:
+            strcpy(aux,"Declaração de INT");
+        break;
+        case 22:
+            strcpy(aux,"Declaração de FLOAT");
+        break;
+        case 23:
+            strcpy(aux,"BREAK");
+        break;
+        case 24:
+            strcpy(aux,"CONTINUE");
+        break;
+        case 25:
+            strcpy(aux,"FOR");
+        break;
+        case 26:
+            strcpy(aux,"Numero Inteiro");
+        break;
+        case 27:
+            strcpy(aux,"Numero Float");
+        break;
+        case 28:
+            strcpy(aux,"WHILE");
+        break;
+        case 29:
+            strcpy(aux,"IF");
+        break;
+        case 30:
+            strcpy(aux,"ELSE");
+        break;
+        case 31:
+            strcpy(aux,"OR ( || )");
+        break;
+        case 32:
+            strcpy(aux,"Not (!)");
+        break;
+        case 33:
+            strcpy(aux,"Menor (<)");
+        break;
+        case 34:
+            strcpy(aux,"Maior (>)");
+        break;
+        case 35:
+            strcpy(aux,"Menor Igual (<=)");
+        break;
+        case 36:
+            strcpy(aux,"Maior Igual (>=)");
+        break;
+        case 37:
+            strcpy(aux,"Diferente (!=)");
+        break;
+      }
+      return aux;
 }
