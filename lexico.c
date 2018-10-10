@@ -181,7 +181,6 @@ go_error:
 
 
 
-
 		if (state_machine == ID){ // VAR
 				if ( ((char_atual >= 'a')&&(char_atual <= 'z')) || ((char_atual >= 'A')&&(char_atual <= 'Z')) ){
 						str_atual[str_length++] = char_atual;
@@ -246,8 +245,6 @@ go_error:
 
 
 
-
-
 		if (state_machine == SSTR){ // SSTR
 				str_atual[str_length++] = char_atual;
 				if (char_atual == '\\'){
@@ -300,7 +297,7 @@ go_error:
 		}//if (state_machine == GAND)
 
 		if (state_machine == GOR){
-				if (char_atual != '|')
+			if (char_atual != '|')
 						goto go_error;
 
 				STC_Token.ttoken = OR;
@@ -394,8 +391,8 @@ go_error:
 	} // while(1)
 
 	str_atual[str_length] = '\0';
-	STC_Token.linha  = linha;
-	STC_Token.coluna = (--coluna)-(str_length);
+	STC_Token.linha       = linha;
+	STC_Token.coluna      = (--coluna)-(str_length);
 	strcpy(STC_Token.lexema,str_atual);
 	return STC_Token;
 } // getToken ()

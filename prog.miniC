@@ -5,6 +5,9 @@
 **==============================
 */
 
+
+// aumentando a linha de inicio
+
 int main() {
 	int num, div, resto;
 	scan("Entre com o inteiro:", num);
