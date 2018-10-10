@@ -4,17 +4,16 @@
 
 Analisador Léxico
 
-		Faz a leitura do arquvo fonte, caracter por caracter,
+		Faz a leitura do arquivo fonte, caracter por caracter,
 			pegando os tokens conforme estabelecido pela gramatica
-			e expressões validas das VAR, STR, NUM
 
 ------------------------------------------------------------------------------*/
 
 Token getToken(){
 
-	Token		STC_Token;	           // ED de retorno do analisador léxico.
-	char		char_atual;	           // Caracter lido armazenado aq.
-	char		str_atual[60]   = "";  // String de retorno como lexema (VAR,NUM,STR).
+	Token		STC_Token;	           	// ED de retorno do analisador léxico.
+	char		char_atual;	           	// Caracter lido armazenado aq.
+	char		str_atual[60]   = "";  	// String de retorno como lexema (VAR,NUM,STR).
 	MachineState    			 state_machine    = 1;  // Estado de Maquina da autômato.
 	short          int     flag_coment			 = 0;  // Verifica fim de comentario.
 	unsigned short int	   str_length  			= 0;  // Comprimento atual da str_atual.
@@ -30,7 +29,6 @@ Token getToken(){
 				coluna    += 3;
 				break;
 		} // if (feof(arq))
-
 		if (flag_coment){
 				if (char_atual == '\n'){
 						ungetc(char_atual,arq);
@@ -39,8 +37,8 @@ Token getToken(){
 				}
 				continue;
 		}
-
-		if (((char_atual == '\n')||(char_atual == '\r'))&&(state_machine==START)) {
+		if (((char_atual == '\n')||(char_atual == '\r'))&&
+													((state_machine == COMLIN)||(state_machine == START))) {
 				linha++;
 				coluna  = 1;
 				continue;
@@ -182,21 +180,6 @@ go_error:
 		}// if (state_machine == START)
 
 
-		if (state_machine == EQUAL){
-				if (char_atual == '='){
-						STC_Token.ttoken = IGUAL;
-						str_length = 2;
-						coluna++;
-						strcpy(str_atual, "==");
-						break;
-				}
-				ungetc(char_atual,arq);
-				STC_Token.ttoken = ATRIB;
-				str_length = 1;
-				// coluna--;
-				strcpy(str_atual, "=");
-				break;
-		} // if (state_machine == EQUAL)
 
 
 		if (state_machine == ID){ // VAR
@@ -235,6 +218,7 @@ go_error:
 		} //	if (state_machine == ID)
 
 
+
 		if (state_machine == NUM){ // NUM
 				if (char_atual == '.'){
 						state_machine = NUMF;
@@ -261,7 +245,10 @@ go_error:
 		}//	if (state_machine == NUMF)
 
 
-		if (state_machine == SSTR){ // sSTR
+
+
+
+		if (state_machine == SSTR){ // SSTR
 				str_atual[str_length++] = char_atual;
 				if (char_atual == '\\'){
 						state_machine = ESTR;
@@ -280,6 +267,24 @@ go_error:
 				state_machine = SSTR;
 				continue;
 		}// if (state_machine == ESTR)
+
+
+
+		if (state_machine == EQUAL){
+				if (char_atual == '='){
+						STC_Token.ttoken = IGUAL;
+						str_length = 2;
+						coluna++;
+						strcpy(str_atual, "==");
+						break;
+				}
+				ungetc(char_atual,arq);
+				STC_Token.ttoken = ATRIB;
+				str_length = 1;
+				// coluna--;
+				strcpy(str_atual, "=");
+				break;
+		} // if (state_machine == EQUAL)
 
 
 		if (state_machine == GAND){
@@ -353,6 +358,7 @@ go_error:
 				strcpy(str_atual, "!");
 				break;
 		}//if (state_machine == NEG)
+
 
 
 		if (state_machine == COMENT){  // comentario

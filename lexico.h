@@ -12,7 +12,7 @@ typedef enum{
 		MULT     = 13 , IGUAL     , MOD     , PRINT    , SCAN       , AND	       ,
 		ABRICHAV = 19 , FECHACHAV , INT     , FLOAT    , BREAK      , CONTINUE   ,
 		FOR      = 25 , NUMint    , NUMfloat , WHILE    , IF         , ELSE       ,
-		OR 		   = 31 , NOT       , MENOR   , MAIOR    , MENORIGUAL , MAIORIGUAL ,
+		OR       = 31 , NOT       , MENOR   , MAIOR    , MENORIGUAL , MAIORIGUAL ,
 		NIGUAL        ,
 }TToken;
 
