@@ -1,6 +1,7 @@
 #include "parser.h"
 
 void consome_token(TToken consome){
+    //  Validação do Token, processo do Lexima
     if (consome == token_atual.ttoken){
         token_atual = getToken();
         return;
@@ -16,6 +17,7 @@ void error(TToken consome){
 }
 
 void function(){
+    token_atual = getToken(); //Inicio do Lexico
     type();
     consome_token(IDENT);
     consome_token(ABRIPAR);
@@ -354,9 +356,6 @@ char *decod_Token(TToken token){
         break;
         case 5:
             strcpy(aux,"Final de Arquivo");
-        break;
-        case 6:
-            strcpy(aux,"ERRO");
         break;
         case 7:
             strcpy(aux,"Identificador");

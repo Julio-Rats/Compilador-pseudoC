@@ -21,12 +21,10 @@ int main(int argc, char *argv[]){
 
 	while(!feof(arq)){
 			token_atual = getToken();
-			printf("lexema = %s \t\t Linha = %d || Coluna = %d \t--  enum = %d\n",token_atual.lexema, token_atual.linha, token_atual.coluna, token_atual.ttoken );
+			printf("lexema = %s \t\t Linha = %d || Coluna = %d \t--  Token = %s\n",token_atual.lexema, token_atual.linha, token_atual.coluna, decod_Token(token_atual.ttoken) );
 	}
 
 	rewind(arq);
-
-	token_atual = getToken();
 	function();
 
   fclose(arq);
