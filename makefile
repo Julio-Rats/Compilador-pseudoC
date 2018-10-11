@@ -1,6 +1,6 @@
 all:comp
 comp: obj
-		gcc *.o -o analiLexico
+		gcc *.o -o compilador
 		rm *.gch *.o
 obj:
 		gcc -c *.c

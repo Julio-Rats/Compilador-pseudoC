@@ -16,7 +16,7 @@ int main() {
 
     // procura e imprime os fatores
     // ola
-    while (num < 1) {
+    while (num > 1) {
         // encontra o menor fator
 	    for (div = 2; num % div; div = div + 1);
 

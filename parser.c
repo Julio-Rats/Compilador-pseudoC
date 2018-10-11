@@ -357,6 +357,9 @@ char *decod_Token(TToken token){
         case 5:
             strcpy(aux,"Final de Arquivo");
         break;
+        case 6:
+            strcpy(aux,"ERROR (Não interpretado)");
+        break;
         case 7:
             strcpy(aux,"Identificador");
         break;

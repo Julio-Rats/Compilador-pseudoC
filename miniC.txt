@@ -1,0 +1,80 @@
+#------------------------------------
+# o programa sera numa funcao main
+#------------------------------------
+
+<function*> -> <type> 'IDENT' '(' <argList> ')' <bloco> ;
+<argList> -> <arg> <restoArgList> | & ;
+<arg> -> <type> 'IDENT' ;
+<restoArgList> -> ',' <argList> | & ;
+<type> -> 'int' | 'float' ;
+<bloco> -> '{' <stmtList> '}' ;
+<stmtList> -> <stmt> <stmtList> | & ;
+<stmt> -> <forStmt> 
+   | <ioStmt>
+   | <whileStmt>
+   | <expr> ';' 
+   | <ifStmt> 
+   | <bloco> 
+   | 'break'
+   | 'continue'
+   | <declaration>
+   | ';' ;
+
+#---------------------------
+# descricao das instrucoes
+#---------------------------
+
+# declaracoes
+<declaration> -> <type> <identList> ';' ;
+<identList> -> 'IDENT' <restoIdentList> ;
+<restoIdentList> -> ',' 'IDENT' <restoIdentList> | & ;
+
+# comando for
+<forStmt> -> 'for' '(' <optExpr> ';' 
+              <optExpr> ';' <optExpr> ')' <stmt> ;
+<optExpr> -> <expr> | & ;
+
+# comandos de IO
+<ioStmt> -> 'scan' '(' 'IDENT' ')' ';' 
+          | 'print' '(' <outList> ')' ';' ;
+<outList> -> <out> <restoOutList> ;         
+<out> -> 'STR' | 'IDENT' | 'NUMint' | 'NUMfloat' ;
+<restoOutList> -> ',' <out> <restoOutList> | & ;
+
+# comando while
+<whileStmt> -> 'while' '(' <expr> ')' <stmt> ;
+
+# comando if
+<ifStmt> -> 'if' '(' <expr> ')' <stmt> <elsePart> ;
+<elsePart> -> 'else' <stmt> | & ;
+
+#------------------------------
+# expressoes
+#------------------------------
+
+<expr> -> <atrib> ;
+<atrib> -> <or> <restoAtrib> ;
+<restoAtrib> -> '=' <atrib> | & ;
+<or> -> <and> <restoOr> ;
+<restoOr> -> '||' <and> <restoOr> | & ;
+<and> -> <not> <restoAnd> ;
+<restoAnd> -> '&&' <not> <restoAnd> | & ;
+<not> -> '!' <not> | <rel> ;
+<rel> -> <add> <restoRel> ;
+<restoRel> -> '==' <add> | '!=' <add>
+            | '<' <add> | '<=' <add> 
+            | '>' <add> | '>=' <add> | & ;
+<add> -> <mult> <restoAdd> ;
+<restoAdd> -> '+' <mult> <restoAdd> 
+            | '-' <mult> <restoAdd> | & ;
+<mult> -> <uno> <restoMult> ;
+<restoMult> -> '*' <uno> <restoMult>
+            |  '/' <uno> <restoMult> 
+            |  '%' <uno> <restoMult> | & ;
+<uno> -> '+' <uno> | '-' <uno> | <fator> ;
+<fator> -> 'NUMint' | 'NUMfloat' 
+         | 'IDENT'  | '(' <atrib> ')' ;
+
+#---------
+# the end
+#---------	  
