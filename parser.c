@@ -12,7 +12,7 @@ void consome_token(TToken consome){
 void error(TToken consome){
     printf("\nError de Compilação:  Linha %d, coluna %d", token_atual.linha,token_atual.coluna);
     printf("\n\tEsperava \"%s\" mas foi recebido \"%s\"\n\n", decod_Token(consome), token_atual.lexema);
-    fclose(arq);
+    fclose(file_src);
     exit(0);
 }
 

@@ -21,17 +21,17 @@ Token getToken(){
 	static unsigned short int  linha 	 			= 1;  // Linha do aquivo TXT.
 
 	while (1){   // WHILE TRUE machine state
-		char_atual = fgetc(arq);
-		if (feof(arq)){
+		char_atual = fgetc(file_src);
+		if (feof(file_src)){
 				STC_Token.ttoken = FOE;
 				strcpy(str_atual, "EOF");
 				str_length = 3;
 				coluna    += 4;
 				break;
-		} // if (feof(arq))
+		} // if (feof(file_src))
 		if (flag_coment){
 				if (char_atual == '\n'){
-						ungetc(char_atual,arq);
+						ungetc(char_atual,file_src);
 						state_machine = START;
 						flag_coment = 0;
 				}
@@ -190,7 +190,7 @@ go_error:
  						str_atual[str_length++] = char_atual;
 						continue;
 				}
-				ungetc(char_atual, arq);
+				ungetc(char_atual, file_src);
 				STC_Token.ttoken = IDENT;
 				if (strcmp(str_atual,"print")==0) {
 							STC_Token.ttoken = PRINT;
@@ -228,7 +228,7 @@ go_error:
 						str_atual[str_length++] = char_atual;
 						continue;
 				}
-				ungetc(char_atual, arq);
+				ungetc(char_atual, file_src);
 				STC_Token.ttoken = NUMint;
 				break;
 		}//	if (state_machine == NUM)
@@ -238,7 +238,7 @@ go_error:
 						str_atual[str_length++] = char_atual;
 						continue;
 				}
-				ungetc(char_atual, arq);
+				ungetc(char_atual, file_src);
 				STC_Token.ttoken = NUMfloat;
 				break;
 		}//	if (state_machine == NUMF)
@@ -275,7 +275,7 @@ go_error:
 						strcpy(str_atual, "==");
 						break;
 				}
-				ungetc(char_atual,arq);
+				ungetc(char_atual,file_src);
 				STC_Token.ttoken = ATRIB;
 				str_length = 1;
 				// coluna--;
@@ -316,7 +316,7 @@ go_error:
 					strcpy(str_atual, ">=");
 					break;
 				}
-				ungetc(char_atual, arq);
+				ungetc(char_atual, file_src);
 				STC_Token.ttoken = MAIOR;
 				str_length = 1;
 				// coluna++;
@@ -332,7 +332,7 @@ go_error:
 					strcpy(str_atual, "<=");
 					break;
 				}
-				ungetc(char_atual, arq);
+				ungetc(char_atual, file_src);
 				STC_Token.ttoken = MENOR;
 				str_length = 1;
 				// coluna++;
@@ -348,7 +348,7 @@ go_error:
 					strcpy(str_atual, "!=");
 					break;
 				}
-				ungetc(char_atual, arq);
+				ungetc(char_atual, file_src);
 				STC_Token.ttoken = NOT;
 				str_length = 1;
 				// coluna++;
@@ -367,7 +367,7 @@ go_error:
 						state_machine = COMLIN;
 						continue;
 				}
-				ungetc(char_atual, arq);
+				ungetc(char_atual, file_src);
 				coluna -= 1;
 				goto go_divi;
 		} // if (state_machine == COMENT)

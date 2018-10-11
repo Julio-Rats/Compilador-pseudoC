@@ -44,7 +44,7 @@ typedef struct{
 		TToken ttoken;
 }Token;
 
-FILE *arq;
+FILE *file_src;
 
  /*
  		Função que le um tokem valido ou erro, retorna como estrutura Token
