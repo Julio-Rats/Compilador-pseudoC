@@ -394,7 +394,7 @@ char *decod_Token(TToken token){
             strcpy(aux,"SCAN");
         break;
         case 18:
-            strcpy(aux,"&&");
+            strcpy(aux,"AND (&&)");
         break;
         case 19:
             strcpy(aux,"Abri chaves");

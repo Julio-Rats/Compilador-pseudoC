@@ -1,5 +1,5 @@
 # IFMG_TRAB_COMPILADORES
-(EM PROGRESSO !!) Compilador feito em C, para uma linguagem, batizada de miniC.
+(EM PROGRESSO !!) Compilador feito em C, para linguagem batizada de miniC.
 
 GRAMATICA DA LINGUAGEM NO ARQUIVO "miniC.txt" no repositorio.
 
