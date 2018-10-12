@@ -212,8 +212,8 @@ int atrib(){
     int flag  = or();
     int flag2 = restoAtrib();
     printf("flag = %d, flag2 = %d\n",flag, flag2 );
-    if ((!flag)&&(!flag)){
-        printf("erroo\n");
+    if ((!flag)&&(!flag2)){
+        printf("erroo linha %d\n", token_atual.linha);
         exit(0);
     }
 }
