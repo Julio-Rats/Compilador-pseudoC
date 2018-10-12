@@ -12,26 +12,23 @@ int main(int argc, char *argv[]){
 
 	file_src = fopen(argv[1],"r");
 	if (!file_src){
-			char fileError[45];
+			char   fileError[45];
 			strcat(fileError,"Arquivo - ");
 			strcat(fileError,argv[1]);
 			perror(fileError);
-			exit(9);
+			exit  (9);
 	}
 
-	// printf("%s\n", decod_Token(NUMfloat));
-	// exit(0);
+	rewind  (file_src);
+	parser();
+	rewind  (file_src);
 
-	rewind(file_src);
 
 	while(!feof(file_src)){
 			token_atual = getToken();
-			printf("lexema = %s \t\t Linha = %d || Coluna = %d \t--  Token = %s\n",token_atual.lexema, token_atual.linha, token_atual.coluna, decod_Token(token_atual.ttoken) );
+			printf ("lexema = %s \t\t Linha = %d || Coluna = %d \t--  Token = %s\n",token_atual.lexema, token_atual.linha, token_atual.coluna, decod_Token(token_atual.ttoken) );
 	}
 
-	rewind(file_src);
-	function();
-
-  fclose(file_src);
+  fclose (file_src);
 	return 0;
 }

@@ -13,7 +13,7 @@ Token getToken(){
 
 	Token		STC_Token;	           	// ED de retorno do analisador léxico.
 	char		char_atual;	           	// Caracter lido armazenado aq.
-	char		str_atual[60]   = "";  	// String de retorno como lexema (VAR,NUM,STR).
+	char		str_atual[60]  = "";  	// String de retorno como lexema (VAR,NUM,STR).
 	MachineState    			 state_machine    = 1;  // Estado de Maquina da autômato.
 	short          int     flag_coment			 = 0;  // Verifica fim de comentario.
 	unsigned short int	   str_length  			= 0;  // Comprimento atual da str_atual.

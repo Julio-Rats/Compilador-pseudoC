@@ -35,7 +35,7 @@
 <optExpr> -> <expr> | & ;
 
 # comandos de IO
-<ioStmt> -> 'scan' '(' 'IDENT' ')' ';' 
+<ioStmt> -> 'scan' '(' 'STR' ',' 'IDENT' ')' ';' 
           | 'print' '(' <outList> ')' ';' ;
 <outList> -> <out> <restoOutList> ;         
 <out> -> 'STR' | 'IDENT' | 'NUMint' | 'NUMfloat' ;

@@ -35,8 +35,6 @@ typedef enum{
 		NEG        ,
 }MachineState;
 
-
-
 typedef struct{
 		unsigned short int linha;
 		unsigned short int coluna;

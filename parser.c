@@ -11,13 +11,17 @@ void consome_token(TToken consome){
 
 void error(TToken consome){
     printf("\nError de Compilação:  Linha %d, coluna %d", token_atual.linha,token_atual.coluna);
-    printf("\n\tEsperava \"%s\" mas foi recebido \"%s\"\n\n", decod_Token(consome), token_atual.lexema);
+    printf("\n\tEsperava \'%s\' mas foi recebido \'%s\'\n\n", decod_Token(consome), token_atual.lexema);
     fclose(file_src);
     exit(0);
 }
 
-void function(){
+void parser(){
     token_atual = getToken(); //Inicio do Lexico
+    function();
+}
+
+void function(){
     type();
     consome_token(IDENT);
     consome_token(ABRIPAR);
@@ -201,62 +205,85 @@ void elsePart(){
 }
 
 void expr(){
-    atrib();
+     atrib();
 }
 
-void atrib(){
-    or();
-    restoAtrib();
-}
-
-void restoAtrib(){
-    if (token_atual.ttoken==ATRIB){
-        consome_token(ATRIB);
-        atrib();
+int atrib(){
+    int flag  = or();
+    int flag2 = restoAtrib();
+    printf("flag = %d, flag2 = %d\n",flag, flag2 );
+    if ((!flag)&&(!flag)){
+        printf("erroo\n");
+        exit(0);
     }
 }
 
-void or(){
-    and();
-    restoOr();
+int restoAtrib(){
+    int flag = 0;
+    if (token_atual.ttoken==ATRIB){
+        consome_token(ATRIB);
+        atrib();
+    }else{
+        flag = 1;
+    }
+    return flag;
 }
 
-void restoOr(){
+int or(){
+    int flag  = and();
+    int flag2 = restoOr();
+    return flag&&flag2;
+}
+
+int restoOr(){
+    int flag = 0;
     if (token_atual.ttoken==OR){
         consome_token(OR);
         and();
         restoOr();
+    }else{
+        flag = 1;
     }
+    return flag;
 }
 
-void and(){
-    not();
-    restoAnd();
+int and(){
+    int flag  = not();
+    int flag2 = restoAnd();
+    return (flag&&flag2);
 }
 
-void restoAnd(){
+int restoAnd(){
+    int flag = 0;
     if (token_atual.ttoken==AND){
         consome_token(AND);
         not();
         restoAnd();
+    }else{
+        flag = 1;
     }
+    return flag;
 }
 
-void not(){
+int not(){
+    int flag = 0;
     if (token_atual.ttoken==NOT){
         consome_token(NOT);
         not();
     }else{
-        rel();
+        flag = rel();
     }
+    return flag;
 }
 
-void rel(){
-    add();
-    restorel();
+int rel(){
+    int flag  = add();
+    int flag2 = restorel();
+    return (flag&&flag2);
 }
 
-void restorel(){
+int restorel(){
+    int flag = 0;
     if (token_atual.ttoken==IGUAL){
         consome_token(IGUAL);
         add();
@@ -275,15 +302,20 @@ void restorel(){
     }else if (token_atual.ttoken==MAIORIGUAL){
         consome_token(MAIORIGUAL);
         add();
+    }else{
+        flag = 1;
     }
+    return flag;
 }
 
-void add(){
-    mult();
-    restoAdd();
+int add(){
+    int flag  = mult();
+    int flag2 = restoAdd();
+    return (flag&&flag2);
 }
 
-void restoAdd(){
+int restoAdd(){
+    int flag = 0;
     if (token_atual.ttoken==SOMA){
         consome_token(SOMA);
         mult();
@@ -292,28 +324,37 @@ void restoAdd(){
         consome_token(SUB);
         mult();
         restoAdd();
+    }else{
+        flag = 1;
     }
+    return  flag;
 }
 
-void mult(){
-    uno();
-    restoMult();
+int mult(){
+    int flag = uno();
+    int flag2 = restoMult();
+    return (flag&&flag2);
 }
 
-void restoMult(){
+int restoMult(){
+    int flag =0 ;
     if (token_atual.ttoken==MULT){
         consome_token(MULT);
         uno();
     }else if (token_atual.ttoken==DIVI){
         consome_token(DIVI);
-        uno();
+         uno();
     }else if (token_atual.ttoken==MOD){
         consome_token(MOD);
         uno();
+    }else{
+        flag = 1;
     }
+    return flag;
 }
 
-void uno(){
+int uno(){
+  int flag = 0;
   if (token_atual.ttoken==SOMA){
       consome_token(SOMA);
       uno();
@@ -321,22 +362,26 @@ void uno(){
       consome_token(SUB);
       uno();
   }else{
-      fator();
+      flag = fator();
   }
+  return flag;
 }
 
-void fator(){
+int fator(){
+  int flag = 0;
   if (token_atual.ttoken==NUMint){
       consome_token(NUMint);
   }else if (token_atual.ttoken==NUMfloat){
       consome_token(NUMfloat);
   }else if (token_atual.ttoken==IDENT){
       consome_token(IDENT);
+      flag = 1;
   }else{
       consome_token(ABRIPAR);
       atrib();
       consome_token(FECHAPAR);
   }
+  return flag;
 }
 
 char *decod_Token(TToken token){
