@@ -9,14 +9,15 @@
 <type> -> 'int' | 'float' ;
 <bloco> -> '{' <stmtList> '}' ;
 <stmtList> -> <stmt> <stmtList> | & ;
-<stmt> -> <forStmt> 
+<stmt> -> <forStmt>
    | <ioStmt>
    | <whileStmt>
-   | <expr> ';' 
-   | <ifStmt> 
-   | <bloco> 
-   | 'break'
-   | 'continue'
+   | <expr> ';'
+   | <ifStmt>
+   | <bloco>
+   | 'break' ';'
+   | 'continue' ';'
+   | 'return' ';'
    | <declaration>
    | ';' ;
 
@@ -30,14 +31,14 @@
 <restoIdentList> -> ',' 'IDENT' <restoIdentList> | & ;
 
 # comando for
-<forStmt> -> 'for' '(' <optExpr> ';' 
+<forStmt> -> 'for' '(' <optExpr> ';'
               <optExpr> ';' <optExpr> ')' <stmt> ;
 <optExpr> -> <expr> | & ;
 
 # comandos de IO
-<ioStmt> -> 'scan' '(' 'STR' ',' 'IDENT' ')' ';' 
+<ioStmt> -> 'scan' '(' 'STR' ',' 'IDENT' ')' ';'
           | 'print' '(' <outList> ')' ';' ;
-<outList> -> <out> <restoOutList> ;         
+<outList> -> <out> <restoOutList> ;
 <out> -> 'STR' | 'IDENT' | 'NUMint' | 'NUMfloat' ;
 <restoOutList> -> ',' <out> <restoOutList> | & ;
 
@@ -62,19 +63,19 @@
 <not> -> '!' <not> | <rel> ;
 <rel> -> <add> <restoRel> ;
 <restoRel> -> '==' <add> | '!=' <add>
-            | '<' <add> | '<=' <add> 
+            | '<' <add> | '<=' <add>
             | '>' <add> | '>=' <add> | & ;
 <add> -> <mult> <restoAdd> ;
-<restoAdd> -> '+' <mult> <restoAdd> 
+<restoAdd> -> '+' <mult> <restoAdd>
             | '-' <mult> <restoAdd> | & ;
 <mult> -> <uno> <restoMult> ;
 <restoMult> -> '*' <uno> <restoMult>
-            |  '/' <uno> <restoMult> 
+            |  '/' <uno> <restoMult>
             |  '%' <uno> <restoMult> | & ;
 <uno> -> '+' <uno> | '-' <uno> | <fator> ;
-<fator> -> 'NUMint' | 'NUMfloat' 
+<fator> -> 'NUMint' | 'NUMfloat'
          | 'IDENT'  | '(' <atrib> ')' ;
 
 #---------
 # the end
-#---------	  
+#---------

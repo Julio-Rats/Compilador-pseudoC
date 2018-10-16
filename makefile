@@ -1,5 +1,3 @@
-CFLAGS   = -O2 -Wall -Wno-parentheses
-
 all: compilador clear
 
 compilador: main
@@ -14,4 +12,4 @@ lexico: parser
 			gcc -c lexico.c
 parser:
 			gcc -c parser.h
-			gcc -c parser.c
+			gcc -c  parser.c

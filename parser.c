@@ -71,7 +71,7 @@ void stmtList(){
           ||(token_atual.ttoken==NUMint)  ||(token_atual.ttoken==NUMfloat)||(token_atual.ttoken==IF)
           ||(token_atual.ttoken==ABRICHAV)||(token_atual.ttoken==FLOAT)  ||(token_atual.ttoken==INT)
           ||(token_atual.ttoken==PONTVIRG)||(token_atual.ttoken==BREAK)  ||(token_atual.ttoken==CONTINUE)
-       ){
+          ||(token_atual.ttoken==RETURN)){
               stmt();
               stmtList();
           }
@@ -98,8 +98,14 @@ void stmt(){
           declaration();
     }else if (token_atual.ttoken==CONTINUE){
           consome_token(CONTINUE);
+          consome_token(PONTVIRG);
     }else if (token_atual.ttoken==BREAK){
           consome_token(BREAK);
+          consome_token(PONTVIRG);
+    }else if (token_atual.ttoken==RETURN){
+          consome_token(RETURN);
+          fator();
+          consome_token(PONTVIRG);
     }else{
           consome_token(PONTVIRG);
     }
@@ -219,7 +225,7 @@ int atrib(){
     int flag  = or();
     int flag2 = restoAtrib();
     if (!((flag)||(flag2))){
-        fprintf(stderr, "Erro de Atribuição linha %d coluna %d\n",
+        fprintf(stderr, "\nErro de Atribuição linha %d coluna %d\n\n",
                 token_atual.linha, token_atual.coluna);
         exit(3);
     }
@@ -376,17 +382,17 @@ int uno(){
 
 int fator(){
   int flag = 0;
-  if (token_atual.ttoken==NUMint){
-      consome_token(NUMint);
+  if (token_atual.ttoken==ABRIPAR){
+      consome_token(ABRIPAR);
+      atrib();
+      consome_token(FECHAPAR);
   }else if (token_atual.ttoken==NUMfloat){
       consome_token(NUMfloat);
   }else if (token_atual.ttoken==IDENT){
       consome_token(IDENT);
       flag = 1;
   }else{
-      consome_token(ABRIPAR);
-      atrib();
-      consome_token(FECHAPAR);
+      consome_token(NUMint);
   }
   return flag;
 }

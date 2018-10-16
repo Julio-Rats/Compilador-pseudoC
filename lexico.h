@@ -20,7 +20,7 @@ typedef enum{
 		ABRICHAV = 19 , FECHACHAV , INT     , FLOAT    , BREAK      , CONTINUE   ,
 		FOR      = 25 , NUMint    , NUMfloat , WHILE    , IF         , ELSE       ,
 		OR       = 31 , NOT       , MENOR   , MAIOR    , MENORIGUAL , MAIORIGUAL ,
-		NIGUAL   = 36 ,
+		NIGUAL   = 36 , RETURN    ,
 }TToken;
 
 /*

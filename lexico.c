@@ -212,6 +212,8 @@ go_error:
 							STC_Token.ttoken = INT;
 				}else if (strcmp(str_atual,"float")==0){
 							STC_Token.ttoken = FLOAT;
+				}else if (strcmp(str_atual,"return")==0){
+							STC_Token.ttoken = RETURN;
 				}
 				break;
 		} //	if (state_machine == ID)
