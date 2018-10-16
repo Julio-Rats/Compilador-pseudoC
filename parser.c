@@ -17,6 +17,7 @@ void error(TToken consome){
 }
 
 void parser(){
+    rewind(file_src);
     token_atual = getToken(); //Inicio do Lexico
     function();
 }
@@ -32,8 +33,8 @@ void function(){
 
 void arglist(){
     if ((token_atual.ttoken == FLOAT)||(token_atual.ttoken == INT)){
-      arg();
-      restoArglist();
+        arg();
+        restoArglist();
     }
 }
 
@@ -44,8 +45,8 @@ void arg(){
 
 void restoArglist(){
     if (token_atual.ttoken == VIRG){
-      consome_token(VIRG);
-      arglist();
+        consome_token(VIRG);
+        arglist();
     }
 }
 
@@ -64,37 +65,43 @@ void bloco(){
 }
 
 void stmtList(){
-    if ((   token_atual.ttoken == FOR)    ||(token_atual.ttoken==PRINT)  ||(token_atual.ttoken==SCAN)
+    if (    (token_atual.ttoken == FOR)   ||(token_atual.ttoken==PRINT)  ||(token_atual.ttoken==SCAN)
           ||(token_atual.ttoken==WHILE)   ||(token_atual.ttoken==NOT)    ||(token_atual.ttoken==ABRIPAR)
           ||(token_atual.ttoken==SOMA)    ||(token_atual.ttoken==SUB)    ||(token_atual.ttoken==IDENT)
           ||(token_atual.ttoken==NUMint)  ||(token_atual.ttoken==NUMfloat)||(token_atual.ttoken==IF)
           ||(token_atual.ttoken==ABRICHAV)||(token_atual.ttoken==FLOAT)  ||(token_atual.ttoken==INT)
-          ||(token_atual.ttoken==PONTVIRG)){
-            stmt();
-            stmtList();
+          ||(token_atual.ttoken==PONTVIRG)||(token_atual.ttoken==BREAK)  ||(token_atual.ttoken==CONTINUE)
+       ){
+              stmt();
+              stmtList();
           }
 }
 
 void stmt(){
     if (token_atual.ttoken==FOR){
-        forStmt();
+          forStmt();
     }else if ((token_atual.ttoken==PRINT)||(token_atual.ttoken==SCAN)){
-        ioStmt();
+          ioStmt();
     }else if (token_atual.ttoken==WHILE){
-        whileStmt();
+          whileStmt();
     }else if ((token_atual.ttoken==NOT)      ||(token_atual.ttoken==ABRIPAR)
               ||(token_atual.ttoken==SOMA)   ||(token_atual.ttoken==SUB) ||(token_atual.ttoken==IDENT)
-              ||(token_atual.ttoken==NUMint) ||(token_atual.ttoken==NUMfloat)){
-        expr();
-        consome_token(PONTVIRG);
+              ||(token_atual.ttoken==NUMint) ||(token_atual.ttoken==NUMfloat)
+             ){
+          expr();
+          consome_token(PONTVIRG);
     }else if (token_atual.ttoken==IF){
-        ifStmt();
+          ifStmt();
     }else if (token_atual.ttoken==ABRICHAV){
-        bloco();
+          bloco();
     }else if ((token_atual.ttoken==FLOAT)||(token_atual.ttoken==INT)){
-        declaration();
+          declaration();
+    }else if (token_atual.ttoken==CONTINUE){
+          consome_token(CONTINUE);
+    }else if (token_atual.ttoken==BREAK){
+          consome_token(BREAK);
     }else{
-        consome_token(PONTVIRG);
+          consome_token(PONTVIRG);
     }
 }
 
@@ -130,7 +137,7 @@ void forStmt(){
 }
 
 void optExpr(){
-    if ((token_atual.ttoken==NOT)            ||(token_atual.ttoken==ABRIPAR)
+    if ((token_atual.ttoken==NOT)          ||(token_atual.ttoken==ABRIPAR)
             ||(token_atual.ttoken==SOMA)   ||(token_atual.ttoken==SUB) ||(token_atual.ttoken==IDENT)
             ||(token_atual.ttoken==NUMint) ||(token_atual.ttoken==NUMfloat)){
               expr();
@@ -211,10 +218,10 @@ void expr(){
 int atrib(){
     int flag  = or();
     int flag2 = restoAtrib();
-    printf("flag = %d, flag2 = %d\n",flag, flag2 );
-    if ((!flag)&&(!flag2)){
-        printf("erroo linha %d\n", token_atual.linha);
-        exit(0);
+    if (!((flag)||(flag2))){
+        fprintf(stderr, "Erro de Atribuição linha %d coluna %d\n",
+                token_atual.linha, token_atual.coluna);
+        exit(3);
     }
 }
 

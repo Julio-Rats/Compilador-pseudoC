@@ -19,15 +19,14 @@ int main(int argc, char *argv[]){
 			exit  (9);
 	}
 
-	rewind  (file_src);
 	parser();
-	rewind  (file_src);
-
-
-	while(!feof(file_src)){
-			token_atual = getToken();
-			printf ("lexema = %s \t\t Linha = %d || Coluna = %d \t--  Token = %s\n",token_atual.lexema, token_atual.linha, token_atual.coluna, decod_Token(token_atual.ttoken) );
-	}
+	// rewind  (file_src);
+	//
+	//
+	// while(!feof(file_src)){
+	// 		token_atual = getToken();
+	// 		printf ("lexema = %s \t\t Linha = %d || Coluna = %d \t--  Token = %s\n",token_atual.lexema, token_atual.linha, token_atual.coluna, decod_Token(token_atual.ttoken) );
+	// }
 
   fclose (file_src);
 	return 0;
