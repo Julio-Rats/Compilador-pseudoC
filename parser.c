@@ -221,82 +221,95 @@ void expr(){
      atrib();
 }
 
-int atrib(){
-    int flag  = or();
-    int flag2 = restoAtrib();
-    if (!((flag)||(flag2))){
+void atrib(){
+    t_valuereturns aux, aux2;
+    aux  = or();
+    aux2 = restoAtrib();
+    printf("%d -- %d\n", aux.bool_leftValue, aux2.bool_leftValue);
+    if (!((aux.bool_leftValue)||(aux2.bool_leftValue))){
         fprintf(stderr, "\nErro de Atribuição linha %d coluna %d\n\n",
                 token_atual.linha, token_atual.coluna);
         exit(3);
     }
 }
 
-int restoAtrib(){
-    int flag = 0;
+t_valuereturns restoAtrib(){
+    t_valuereturns aux;
+    aux.bool_leftValue = 0;
     if (token_atual.ttoken==ATRIB){
         consome_token(ATRIB);
         atrib();
     }else{
-        flag = 1;
+        aux.bool_leftValue = 1;
     }
-    return flag;
+    return aux;
 }
 
-int or(){
-    int flag  = and();
-    int flag2 = restoOr();
-    return flag&&flag2;
+t_valuereturns or(){
+    t_valuereturns aux, aux2;
+    aux  = and();
+    aux2 = restoOr();
+    aux.bool_leftValue &= aux2.bool_leftValue;
+    return aux;
 }
 
-int restoOr(){
-    int flag = 0;
+t_valuereturns restoOr(){
+    t_valuereturns aux;
+    aux.bool_leftValue = 0;
     if (token_atual.ttoken==OR){
         consome_token(OR);
         and();
         restoOr();
     }else{
-        flag = 1;
+        aux.bool_leftValue = 1;
     }
-    return flag;
+    return aux;
 }
 
-int and(){
-    int flag  = not();
-    int flag2 = restoAnd();
-    return (flag&&flag2);
+t_valuereturns and(){
+    t_valuereturns aux, aux2;
+    aux  = not();
+    aux2 = restoAnd();
+    aux.bool_leftValue &= aux2.bool_leftValue;
+    return aux;
 }
 
-int restoAnd(){
-    int flag = 0;
+t_valuereturns restoAnd(){
+    t_valuereturns aux;
+    aux.bool_leftValue = 0;
     if (token_atual.ttoken==AND){
         consome_token(AND);
         not();
         restoAnd();
     }else{
-        flag = 1;
+        aux.bool_leftValue = 1;
     }
-    return flag;
+    return aux;
 }
 
-int not(){
-    int flag = 0;
+t_valuereturns not(){
+    t_valuereturns aux;
+    aux.bool_leftValue = 0;
     if (token_atual.ttoken==NOT){
         consome_token(NOT);
         not();
     }else{
-        flag = rel();
+        aux = rel();
     }
-    return flag;
+    return aux;
 }
 
-int rel(){
-    int flag  = add();
-    int flag2 = restorel();
-    return (flag&&flag2);
+t_valuereturns rel(){
+   t_valuereturns aux, aux2;
+    aux  = add();
+    aux2 = restorel();
+    aux.bool_leftValue &= aux2.bool_leftValue;
+    return aux;
 }
 
-int restorel(){
-    int flag = 0;
+t_valuereturns restorel(){
+    t_valuereturns aux;
+    aux.bool_leftValue = 0;
     if (token_atual.ttoken==IGUAL){
         consome_token(IGUAL);
         add();
@@ -316,19 +329,22 @@ int restorel(){
         consome_token(MAIORIGUAL);
         add();
     }else{
-        flag = 1;
+        aux.bool_leftValue = 1;
     }
-    return flag;
+    return aux;
 }
 
-int add(){
-    int flag  = mult();
-    int flag2 = restoAdd();
-    return (flag&&flag2);
+t_valuereturns add(){
+    t_valuereturns aux, aux2;
+    aux  = mult();
+    aux2 = restoAdd();
+    aux.bool_leftValue &= aux2.bool_leftValue;
+    return aux;
 }
 
-int restoAdd(){
-    int flag = 0;
+t_valuereturns restoAdd(){
+    t_valuereturns aux;
+    aux.bool_leftValue = 0;
     if (token_atual.ttoken==SOMA){
         consome_token(SOMA);
         mult();
@@ -338,19 +354,22 @@ int restoAdd(){
         mult();
         restoAdd();
     }else{
-        flag = 1;
+        aux.bool_leftValue = 1;
     }
-    return  flag;
+    return  aux;
 }
 
-int mult(){
-    int flag = uno();
-    int flag2 = restoMult();
-    return (flag&&flag2);
+t_valuereturns mult(){
+    t_valuereturns aux, aux2;
+    aux  = uno();
+    aux2 = restoMult();
+    aux.bool_leftValue &= aux2.bool_leftValue;
+    return aux;
 }
 
-int restoMult(){
-    int flag =0 ;
+t_valuereturns restoMult(){
+    t_valuereturns aux;
+    aux.bool_leftValue = 0;
     if (token_atual.ttoken==MULT){
         consome_token(MULT);
         uno();
@@ -361,13 +380,14 @@ int restoMult(){
         consome_token(MOD);
         uno();
     }else{
-        flag = 1;
+        aux.bool_leftValue = 1;
     }
-    return flag;
+    return aux;
 }
 
-int uno(){
-  int flag = 0;
+t_valuereturns uno(){
+  t_valuereturns aux;
+  aux.bool_leftValue = 0;
   if (token_atual.ttoken==SOMA){
       consome_token(SOMA);
       uno();
@@ -375,13 +395,14 @@ int uno(){
       consome_token(SUB);
       uno();
   }else{
-      flag = fator();
+      aux = fator();
   }
-  return flag;
+  return aux;
 }
 
-int fator(){
-  int flag = 0;
+t_valuereturns fator(){
+  t_valuereturns aux;
+  aux.bool_leftValue = 0;
   if (token_atual.ttoken==ABRIPAR){
       consome_token(ABRIPAR);
       atrib();
@@ -390,11 +411,11 @@ int fator(){
       consome_token(NUMfloat);
   }else if (token_atual.ttoken==IDENT){
       consome_token(IDENT);
-      flag = 1;
+      aux.bool_leftValue = 1;
   }else{
       consome_token(NUMint);
   }
-  return flag;
+  return aux;
 }
 
 char *decod_Token(TToken token){

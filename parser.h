@@ -4,6 +4,11 @@
 #include <stdio.h>
 #include "lexico.h"
 
+typedef struct{
+      int bool_leftValue;
+}t_valuereturns;
+
+
 // Variavel que controla o analisador lexico, com o lexema e Tipo de Token atual.
 
 Token  token_atual;
@@ -38,20 +43,20 @@ void whileStmt();
 void ifStmt();
 void elsePart();
 void expr();
-int atrib();
-int restoAtrib();
-int or();
-int restoOr();
-int and();
-int restoAnd();
-int not();
-int rel();
-int restorel();
-int add();
-int restoAdd();
-int mult();
-int restoMult();
-int uno();
-int fator();
+void atrib();
+t_valuereturns restoAtrib();
+t_valuereturns or();
+t_valuereturns restoOr();
+t_valuereturns and();
+t_valuereturns restoAnd();
+t_valuereturns not();
+t_valuereturns rel();
+t_valuereturns restorel();
+t_valuereturns add();
+t_valuereturns restoAdd();
+t_valuereturns mult();
+t_valuereturns restoMult();
+t_valuereturns uno();
+t_valuereturns fator();
 
 #endif
