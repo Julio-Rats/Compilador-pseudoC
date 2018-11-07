@@ -8,20 +8,23 @@
 // aumentando a linha de inicio
 
 int main() {
-	a=10;
 	int num, div, resto;
-
+	float arroz,feijao;
 	scan("Entre com o inteiro:", num);
 	print("Fatorando...\n");
-	print(num, " = ");
+	int aba;
+	print(num,  "= ");
     // procura e imprime os fatores
-    // ola
-    while (num > 1) {
+    while (num > 1){
         // encontra o menor fator
-	    for (div = 2; num % div; div = (div + 1));
-	    print (div);
+			//int div,num;
+			//jao = 10;
+	    for (div = 2; num % div; div = (div + 1)){
+	    		print (div);
+			}
 	    num = num / div;
 	    if (num > 1)
 	       print("*");
+		}
+		aba = 2;
 	}
-}

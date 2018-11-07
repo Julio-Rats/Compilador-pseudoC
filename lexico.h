@@ -1,5 +1,5 @@
-#ifndef LEXICO
-#define  LEXICO
+#ifndef  _LEXICO_
+#define  _LEXICO_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,18 +38,14 @@ typedef enum{
 typedef struct{
 		unsigned short int linha;
 		unsigned short int coluna;
-		char lexema[60];
+		char lexema[32];
 		TToken ttoken;
 }Token;
 
 FILE *file_src;
 
- /*
- 		Função que le um tokem valido ou erro, retorna como estrutura Token
-			tendo a string e o tipo (Token) dela.
-
- */
-
+// 		Função que le um tokem valido ou erro, retorna como estrutura Token
+//			tendo a string e o tipo (Token) dela.
 Token getToken();
 
 #endif // #ifndef LEXICO

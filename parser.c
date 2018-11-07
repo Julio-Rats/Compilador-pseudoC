@@ -1,17 +1,19 @@
 #include "parser.h"
 
-void consome_token(TToken consome){
+char* consome_token(TToken consome){
     //  Validação do Token, processo do Lexima
     if (consome == token_atual.ttoken){
+        char *lexema = malloc(sizeof(char)*32);
+        strcpy(lexema, token_atual.lexema);
         token_atual = getToken();
-        return;
+        return lexema;
     }
     error(consome);
 }
 
 void error(TToken consome){
-    printf("\nError de Compilação:  Linha %d, coluna %d", token_atual.linha,token_atual.coluna);
-    printf("\n\tEsperava \'%s\' mas foi recebido \'%s\'\n\n", decod_Token(consome), token_atual.lexema);
+    printf("\nError de Compilação:  Linha %d, Coluna %d", token_atual.linha,token_atual.coluna);
+    printf("\n\tEsperava \'%s\' Mas Foi Recebido \'%s\'\n\n", decod_Token(consome), token_atual.lexema);
     fclose(file_src);
     exit(0);
 }
@@ -50,12 +52,13 @@ void restoArglist(){
     }
 }
 
-void type(){
+int type(){
     if (token_atual.ttoken == INT){
         consome_token(INT);
-    }else{
-        consome_token(FLOAT);
+        return 0;
     }
+    consome_token(FLOAT);
+    return 1;
 }
 
 void bloco(){
@@ -65,12 +68,12 @@ void bloco(){
 }
 
 void stmtList(){
-    if (    (token_atual.ttoken == FOR)   ||(token_atual.ttoken==PRINT)  ||(token_atual.ttoken==SCAN)
-          ||(token_atual.ttoken==WHILE)   ||(token_atual.ttoken==NOT)    ||(token_atual.ttoken==ABRIPAR)
-          ||(token_atual.ttoken==SOMA)    ||(token_atual.ttoken==SUB)    ||(token_atual.ttoken==IDENT)
+    if (    (token_atual.ttoken == FOR)   ||(token_atual.ttoken==PRINT)   ||(token_atual.ttoken==SCAN)
+          ||(token_atual.ttoken==WHILE)   ||(token_atual.ttoken==NOT)     ||(token_atual.ttoken==ABRIPAR)
+          ||(token_atual.ttoken==SOMA)    ||(token_atual.ttoken==SUB)     ||(token_atual.ttoken==IDENT)
           ||(token_atual.ttoken==NUMint)  ||(token_atual.ttoken==NUMfloat)||(token_atual.ttoken==IF)
-          ||(token_atual.ttoken==ABRICHAV)||(token_atual.ttoken==FLOAT)  ||(token_atual.ttoken==INT)
-          ||(token_atual.ttoken==PONTVIRG)||(token_atual.ttoken==BREAK)  ||(token_atual.ttoken==CONTINUE)
+          ||(token_atual.ttoken==ABRICHAV)||(token_atual.ttoken==FLOAT)   ||(token_atual.ttoken==INT)
+          ||(token_atual.ttoken==PONTVIRG)||(token_atual.ttoken==BREAK)   ||(token_atual.ttoken==CONTINUE)
           ||(token_atual.ttoken==RETURN)){
               stmt();
               stmtList();
@@ -112,21 +115,47 @@ void stmt(){
 }
 
 void declaration(){
-    type();
-    identList();
+    int vartype     = type();
+    int numvarantes = ((lenVariables-1)>=0) ? lenVariables : 0;
+    identList(vartype);
     consome_token(PONTVIRG);
+
 }
 
-void identList(){
-    consome_token(IDENT);
-    restoIdentList();
+void identList(int vartype){
+    int coluna = token_atual.coluna;
+    char *var  = consome_token(IDENT);
+    if (lenVariables == 0){
+        listVariables = malloc(sizeof(t_variable));
+        lenVariables  = 1;
+        listVariables[0].type   = vartype;
+        listVariables[0].id_var = malloc(sizeof(char)*32);
+        strcpy(listVariables[0].id_var,var);
+    }else{
+        for (int i=0; i<lenVariables;i++)
+            if (strcmp(var,listVariables[i].id_var)==0){
+                fprintf(stderr, "\nError de Compilação: Linha %d, Coluna %d\n\tMúltipla Declaração de Variavel,  Variavel = \'%s\'\n\n",token_atual.linha, coluna, var);
+                exit(0);
+            }
+        listVariables= realloc(listVariables,sizeof(t_variable)*(++(lenVariables)));
+        listVariables[(lenVariables)-1].type   = vartype;
+        listVariables[(lenVariables)-1].id_var = malloc(sizeof(char)*32);
+        strcpy(listVariables[(lenVariables)-1].id_var,var);
+    }
+    restoIdentList(vartype);
+
 }
 
-void restoIdentList(){
+void restoIdentList(int vartype){
     if (token_atual.ttoken==VIRG){
-      consome_token(VIRG);
-      consome_token(IDENT);
-      restoIdentList();
+        consome_token(VIRG);
+        int coluna = token_atual.coluna;
+        char *var = consome_token(IDENT);
+        listVariables= realloc(listVariables ,sizeof(t_variable)*(++(lenVariables)));
+        listVariables[(lenVariables)-1].id_var = malloc(sizeof(char)*32);
+        strcpy(listVariables[(lenVariables)-1].id_var,var);
+        listVariables[(lenVariables)-1].type = vartype;
+        restoIdentList(vartype);
     }
 }
 
@@ -225,7 +254,7 @@ void atrib(){
     t_valuereturns aux, aux2;
     aux  = or();
     aux2 = restoAtrib();
-    printf("%d -- %d\n", aux.bool_leftValue, aux2.bool_leftValue);
+    // printf("%d -- %d\n", aux.bool_leftValue, aux2.bool_leftValue);
     if (!((aux.bool_leftValue)||(aux2.bool_leftValue))){
         fprintf(stderr, "\nErro de Atribuição linha %d coluna %d\n\n",
                 token_atual.linha, token_atual.coluna);
@@ -410,7 +439,17 @@ t_valuereturns fator(){
   }else if (token_atual.ttoken==NUMfloat){
       consome_token(NUMfloat);
   }else if (token_atual.ttoken==IDENT){
-      consome_token(IDENT);
+      char *var = consome_token(IDENT);
+      int flag  = 1;
+      for (int i=0;i<lenVariables;i++){
+          if (strcmp(var,listVariables[i].id_var)==0){
+              flag = 0;
+              break;
+          }
+      }
+      if (flag){
+          fprintf(stderr, "\nError de Compilação: Linha %d, Coluna %d\n\tAtribuição A Uma Variavel Não Declarada,  Variavel = \'%s\'\n\n",token_atual.linha, token_atual.coluna, var);
+      }
       aux.bool_leftValue = 1;
   }else{
       consome_token(NUMint);

@@ -1,13 +1,15 @@
-#ifndef PARSER_H
-#define  PARSER_H
+#ifndef  _PARSER_
+#define  _PARSER_
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "lexico.h"
+#include "virtualmachine.h"
 
 typedef struct{
-      int bool_leftValue;
+      int  bool_leftValue;
 }t_valuereturns;
-
 
 // Variavel que controla o analisador lexico, com o lexema e Tipo de Token atual.
 
@@ -19,31 +21,31 @@ Token  token_atual;
 */
 
 char* decod_Token(TToken token);
-void consome_token(TToken consome);
-void error(TToken consome);
-void parser();
-void function();
-void arglist();
-void arg();
-void restoArglist();
-void type();
-void bloco();
-void stmtList();
-void stmt();
-void declaration();
-void identList();
-void restoIdentList();
-void forStmt();
-void optExpr();
-void ioStmt();
-void outList();
-void out();
-void restOutList();
-void whileStmt();
-void ifStmt();
-void elsePart();
-void expr();
-void atrib();
+char* consome_token(TToken consome);
+void  error(TToken consome);
+void  parser();
+void  function();
+void  arglist();
+void  arg();
+void  restoArglist();
+int   type();
+void  bloco();
+void  stmtList();
+void  stmt();
+void  declaration();
+void  identList(int vartype);
+void  restoIdentList(int vartype);
+void  forStmt();
+void  optExpr();
+void  ioStmt();
+void  outList();
+void  out();
+void  restOutList();
+void  whileStmt();
+void  ifStmt();
+void  elsePart();
+void  expr();
+void  atrib();
 t_valuereturns restoAtrib();
 t_valuereturns or();
 t_valuereturns restoOr();
