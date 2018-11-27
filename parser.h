@@ -1,5 +1,5 @@
 #ifndef  _PARSER_
-#define  _PARSER_
+#define   _PARSER_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,7 +8,9 @@
 #include "virtualmachine.h"
 
 typedef struct{
-      int  bool_leftValue;
+      unsigned int  bool_leftValue;
+      Quad         *listQuad;
+      char         *NameResult;
 }t_valuereturns;
 
 // Variavel que controla o analisador lexico, com o lexema e Tipo de Token atual.
@@ -45,7 +47,7 @@ void  whileStmt();
 void  ifStmt();
 void  elsePart();
 void  expr();
-void  atrib();
+t_valuereturns atrib();
 t_valuereturns restoAtrib();
 t_valuereturns or();
 t_valuereturns restoOr();
@@ -55,9 +57,9 @@ t_valuereturns not();
 t_valuereturns rel();
 t_valuereturns restorel();
 t_valuereturns add();
-t_valuereturns restoAdd();
+t_valuereturns restoAdd(char* parametro);
 t_valuereturns mult();
-t_valuereturns restoMult();
+t_valuereturns restoMult(char *parametro);
 t_valuereturns uno();
 t_valuereturns fator();
 

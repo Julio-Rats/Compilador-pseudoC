@@ -128,18 +128,18 @@ void identList(int vartype){
     if (lenVariables == 0){
         listVariables = malloc(sizeof(t_variable));
         lenVariables  = 1;
-        listVariables[0].type   = vartype;
-        listVariables[0].id_var = malloc(sizeof(char)*32);
+        // listVariables[0].id_var = malloc(sizeof(char)*32);
         strcpy(listVariables[0].id_var,var);
     }else{
         for (int i=0; i<lenVariables;i++)
             if (strcmp(var,listVariables[i].id_var)==0){
                 fprintf(stderr, "\nError de Compilação: Linha %d, Coluna %d\n\tMúltipla Declaração de Variavel,  Variavel = \'%s\'\n\n",token_atual.linha, coluna, var);
-                exit(0);
+                fclose(file_src);
+                exit(3);
             }
         listVariables= realloc(listVariables,sizeof(t_variable)*(++(lenVariables)));
-        listVariables[(lenVariables)-1].type   = vartype;
-        listVariables[(lenVariables)-1].id_var = malloc(sizeof(char)*32);
+        // listVariables[(lenVariables)-1].type   = vartype;
+        // listVariables[(lenVariables)-1].id_var = malloc(sizeof(char)*32);
         strcpy(listVariables[(lenVariables)-1].id_var,var);
     }
     restoIdentList(vartype);
@@ -151,10 +151,16 @@ void restoIdentList(int vartype){
         consome_token(VIRG);
         int coluna = token_atual.coluna;
         char *var = consome_token(IDENT);
+        for (int i=0; i<lenVariables;i++)
+            if (strcmp(var,listVariables[i].id_var)==0){
+                fprintf(stderr, "\nError de Compilação: Linha %d, Coluna %d\n\tMúltipla Declaração de Variavel,  Variavel = \'%s\'\n\n",token_atual.linha, coluna, var);
+                fclose(file_src);
+                exit(3);
+        }
         listVariables= realloc(listVariables ,sizeof(t_variable)*(++(lenVariables)));
-        listVariables[(lenVariables)-1].id_var = malloc(sizeof(char)*32);
+        // listVariables[(lenVariables)-1].id_var = malloc(sizeof(char)*32);
+        // listVariables[(lenVariables)-1].type = vartype;
         strcpy(listVariables[(lenVariables)-1].id_var,var);
-        listVariables[(lenVariables)-1].type = vartype;
         restoIdentList(vartype);
     }
 }
@@ -225,9 +231,11 @@ void restOutList(){
 void whileStmt(){
     consome_token(WHILE);
     consome_token(ABRIPAR);
+    char* label = genLabel();
     expr();
     consome_token(FECHAPAR);
     stmt();
+    // return aux;
 }
 
 void ifStmt(){
@@ -250,13 +258,12 @@ void expr(){
      atrib();
 }
 
-void atrib(){
+t_valuereturns atrib(){
     t_valuereturns aux, aux2;
     aux  = or();
     aux2 = restoAtrib();
-    // printf("%d -- %d\n", aux.bool_leftValue, aux2.bool_leftValue);
     if (!((aux.bool_leftValue)||(aux2.bool_leftValue))){
-        fprintf(stderr, "\nErro de Atribuição linha %d coluna %d\n\n",
+        fprintf(stderr, "\nErro de Atribuição de Variavel, linha %d coluna %d\n\n",
                 token_atual.linha, token_atual.coluna);
         exit(3);
     }
@@ -268,6 +275,7 @@ t_valuereturns restoAtrib(){
     if (token_atual.ttoken==ATRIB){
         consome_token(ATRIB);
         atrib();
+        aux.bool_leftValue = 0;
     }else{
         aux.bool_leftValue = 1;
     }
@@ -366,22 +374,24 @@ t_valuereturns restorel(){
 t_valuereturns add(){
     t_valuereturns aux, aux2;
     aux  = mult();
-    aux2 = restoAdd();
+    aux2 = restoAdd(aux.NameResult);
+
     aux.bool_leftValue &= aux2.bool_leftValue;
     return aux;
 }
 
-t_valuereturns restoAdd(){
-    t_valuereturns aux;
+t_valuereturns restoAdd(char* parametro){
+    t_valuereturns aux,aux2;
     aux.bool_leftValue = 0;
     if (token_atual.ttoken==SOMA){
         consome_token(SOMA);
-        mult();
-        restoAdd();
+        aux  = mult();
+        aux2 = restoAdd(parametro);
+
     }else if (token_atual.ttoken==SUB){
         consome_token(SUB);
-        mult();
-        restoAdd();
+        aux  = mult();
+        aux2 = restoAdd(parametro);
     }else{
         aux.bool_leftValue = 1;
     }
@@ -391,38 +401,54 @@ t_valuereturns restoAdd(){
 t_valuereturns mult(){
     t_valuereturns aux, aux2;
     aux  = uno();
-    aux2 = restoMult();
+    aux2 = restoMult(aux.NameResult);
+    aux.listQuad   = addQuad(aux.listQuad,aux2.listQuad);
+    aux.NameResult = aux2.NameResult;
     aux.bool_leftValue &= aux2.bool_leftValue;
     return aux;
 }
 
-t_valuereturns restoMult(){
+t_valuereturns restoMult(char *parametro){
     t_valuereturns aux;
-    aux.bool_leftValue = 0;
+    aux.listQuad = NULL;
+    // aux.bool_leftValue = 0;
     if (token_atual.ttoken==MULT){
         consome_token(MULT);
-        uno();
+        aux = uno();
+        Quad *q1 = genQuad("*",parametro,parametro,aux.NameResult);
+        aux.listQuad = addQuad(aux.listQuad,q1);
+        aux.bool_leftValue = 0;
     }else if (token_atual.ttoken==DIVI){
         consome_token(DIVI);
-         uno();
+        aux = uno();
+        Quad *q1 = genQuad("/",parametro,parametro,aux.NameResult);
+        aux.listQuad = addQuad(aux.listQuad,q1);
+        aux.bool_leftValue = 0;
     }else if (token_atual.ttoken==MOD){
         consome_token(MOD);
-        uno();
+        aux = uno();
+        Quad *q1 = genQuad("%",parametro,parametro,aux.NameResult);
+        aux.listQuad = addQuad(aux.listQuad,q1);
+        aux.bool_leftValue = 0;
     }else{
         aux.bool_leftValue = 1;
+        aux.NameResult = parametro;
     }
     return aux;
 }
 
 t_valuereturns uno(){
   t_valuereturns aux;
-  aux.bool_leftValue = 0;
+  aux.listQuad = NULL;
   if (token_atual.ttoken==SOMA){
-      consome_token(SOMA);
-      uno();
+      aux = uno();
+      aux.bool_leftValue = 0;
   }else if (token_atual.ttoken==SUB){
       consome_token(SUB);
-      uno();
+      aux = uno();
+      Quad *q1 = genQuad("-",aux.NameResult,"0",aux.NameResult);
+      aux.listQuad = addQuad(aux.listQuad,q1);
+      aux.bool_leftValue = 0;
   }else{
       aux = fator();
   }
@@ -431,28 +457,48 @@ t_valuereturns uno(){
 
 t_valuereturns fator(){
   t_valuereturns aux;
-  aux.bool_leftValue = 0;
+  aux.listQuad   = NULL;
+  aux.NameResult = NULL;
   if (token_atual.ttoken==ABRIPAR){
       consome_token(ABRIPAR);
+      // aux = atrib();
       atrib();
       consome_token(FECHAPAR);
+      aux.bool_leftValue = 0;
   }else if (token_atual.ttoken==NUMfloat){
-      consome_token(NUMfloat);
+      char *temp   = genTemp();
+      char *lexema = consome_token(NUMfloat);
+      Quad *q1     = genQuad((char*)"=",temp,lexema,NULL);
+      aux.listQuad = addQuad(aux.listQuad,q1);
+      aux.NameResult     = temp;
+      aux.bool_leftValue = 0;
   }else if (token_atual.ttoken==IDENT){
-      char *var = consome_token(IDENT);
+      char *lexema = consome_token(IDENT);
       int flag  = 1;
       for (int i=0;i<lenVariables;i++){
-          if (strcmp(var,listVariables[i].id_var)==0){
+          if (strcmp(lexema,listVariables[i].id_var)==0){
               flag = 0;
               break;
           }
       }
       if (flag){
-          fprintf(stderr, "\nError de Compilação: Linha %d, Coluna %d\n\tAtribuição A Uma Variavel Não Declarada,  Variavel = \'%s\'\n\n",token_atual.linha, token_atual.coluna, var);
+          fprintf(stderr, "\nError de Compilação: Linha %d, Coluna %d\n\tAtribuição A Uma Variavel Não Declarada,  Variavel = \'%s\'\n\n",token_atual.linha, token_atual.coluna, lexema);
+          fclose(file_src);
+          exit(3);
       }
+      char *temp     = genTemp();
+      Quad *q1       = genQuad((char*)"=",temp,lexema,NULL);
+      aux.listQuad   = addQuad(aux.listQuad,q1);
+      aux.NameResult = temp;
+      // return 1 se IDENT
       aux.bool_leftValue = 1;
   }else{
-      consome_token(NUMint);
+      char *lexema = consome_token(NUMint);
+      char *temp   = genTemp();
+      Quad *q1     = genQuad((char*)"=",temp,lexema,NULL);
+      aux.listQuad = addQuad(aux.listQuad,q1);
+      aux.NameResult     = temp;
+      aux.bool_leftValue = 0;
   }
   return aux;
 }

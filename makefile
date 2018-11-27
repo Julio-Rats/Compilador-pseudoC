@@ -10,12 +10,9 @@ main: lexico
 lexico: parser
 			gcc -c -O3 lexico.h
 			gcc -c -O3 lexico.c
-parser: semantico
+parser: virtualmachine
 			gcc -c -O3 parser.h
 			gcc -c -O3 parser.c
-semantico: virtualmachine
-			gcc -c -O3 semantico.h
-			gcc -c -O3 semantico.c
 virtualmachine:
 			gcc -c -O3 virtualmachine.h
 			gcc -c -O3 virtualmachine.c

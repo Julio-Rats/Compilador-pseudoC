@@ -2,22 +2,30 @@
 #define  _virtualmachine_
 
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+typedef struct quad Quad;
+
+struct quad{
+      char *param1;
+      char *param2;
+      char *param3;
+      char *param4;
+      Quad *next;
+};
 
 typedef struct{
-    char         *id_label;
-    unsigned int  pos_label;
-}t_label;
-
-typedef struct{
-    char  *id_var;
-    int    type;
-    float  value_var;
+    char  id_var[32];
 }t_variable;
 
-extern unsigned int lenLabels;
 extern unsigned int lenVariables;
-extern t_label     *listLabels;
 extern t_variable  *listVariables;
+
+char* genLabel();
+char* genTemp ();
+Quad* genQuad(char*param1,char*param2,char*param3,char*param4);
+Quad* addQuad (Quad* destine, Quad* Source);
 
 
 #endif
