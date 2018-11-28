@@ -54,6 +54,7 @@ void function(){
       }}else{
           printf("NOTHING\n");
       }
+
 }
 
 void arglist(){
@@ -94,6 +95,7 @@ t_valuereturns bloco(){
 
 t_valuereturns stmtList(){
     t_valuereturns aux, aux2;
+    aux.listQuad = NULL;
     if (    (token_atual.ttoken == FOR)   ||(token_atual.ttoken==PRINT)   ||(token_atual.ttoken==SCAN)
           ||(token_atual.ttoken==WHILE)   ||(token_atual.ttoken==NOT)     ||(token_atual.ttoken==ABRIPAR)
           ||(token_atual.ttoken==SOMA)    ||(token_atual.ttoken==SUB)     ||(token_atual.ttoken==IDENT)
@@ -131,18 +133,12 @@ t_valuereturns stmt(){
           declaration();
     }else if (token_atual.ttoken==CONTINUE){
           consome_token(CONTINUE);
-          Quad *q1     = genQuad((char*)"CALL",(char*)"CONTINUE",NULL,NULL);
-          aux.listQuad = addQuad(aux.listQuad, q1);
           consome_token(PONTVIRG);
     }else if (token_atual.ttoken==BREAK){
           consome_token(BREAK);
-          Quad *q1  = genQuad((char*)"CALL",(char*)"BREAK",NULL,NULL);
-          aux.listQuad = addQuad(aux.listQuad, q1);
           consome_token(PONTVIRG);
     }else if (token_atual.ttoken==RETURN){
           consome_token(RETURN);
-          Quad *q1  = genQuad((char*)"CALL",(char*)"RETURN",NULL,NULL);
-          aux.listQuad = addQuad(aux.listQuad, q1);
           consome_token(PONTVIRG);
     }else{
           consome_token(PONTVIRG);
@@ -164,6 +160,7 @@ void identList(int vartype){
     if (lenVariables == 0){
         listVariables = malloc(sizeof(t_variable));
         lenVariables  = 1;
+        listVariables[0].id_var = malloc(sizeof(char)*32);
         strcpy(listVariables[0].id_var,var);
     }else{
         for (int i=0; i<lenVariables;i++)
@@ -173,6 +170,7 @@ void identList(int vartype){
                 exit(3);
             }
         listVariables= realloc(listVariables,sizeof(t_variable)*(++(lenVariables)));
+        listVariables[(lenVariables)-1].id_var = malloc(sizeof(char)*32);
         strcpy(listVariables[(lenVariables)-1].id_var,var);
     }
     restoIdentList(vartype);
@@ -191,6 +189,7 @@ void restoIdentList(int vartype){
                 exit(3);
         }
         listVariables= realloc(listVariables ,sizeof(t_variable)*(++(lenVariables)));
+        listVariables[(lenVariables)-1].id_var = malloc(sizeof(char)*32);
         strcpy(listVariables[(lenVariables)-1].id_var,var);
         restoIdentList(vartype);
     }
@@ -225,6 +224,7 @@ t_valuereturns forStmt(){
 
 t_valuereturns optExpr(){
     t_valuereturns aux;
+    aux.listQuad = NULL;
     if ((token_atual.ttoken==NOT)          ||(token_atual.ttoken==ABRIPAR)
             ||(token_atual.ttoken==SOMA)   ||(token_atual.ttoken==SUB) ||(token_atual.ttoken==IDENT)
             ||(token_atual.ttoken==NUMint) ||(token_atual.ttoken==NUMfloat)){
@@ -235,14 +235,21 @@ t_valuereturns optExpr(){
 
 t_valuereturns ioStmt(){
     t_valuereturns aux;
+    aux.listQuad = NULL;
     if (token_atual.ttoken==SCAN){
         consome_token(SCAN);
         consome_token(ABRIPAR);
         char *str = consome_token(STR);
         consome_token(VIRG);
+        char *temp  = genTemp();
+        char *temp1 = genTemp();
         char *id = consome_token(IDENT);
-        Quad *q1 = genQuad((char*)"CALL","SACN",str,id);
+        Quad *q1 = genQuad((char*)"=",temp,str,NULL);
+        Quad *q2 = genQuad((char*)"=",temp1,id,NULL);
+        Quad *q3 = genQuad((char*)"CALL","SCAN",temp,temp1);
         aux.listQuad = addQuad(aux.listQuad, q1);
+        aux.listQuad = addQuad(aux.listQuad, q2);
+        aux.listQuad = addQuad(aux.listQuad, q3);
         consome_token(FECHAPAR);
         consome_token(PONTVIRG);
     }else{
@@ -261,18 +268,31 @@ t_valuereturns outList(){
     t_valuereturns aux, aux2;
     aux  = out();
     aux2 = restOutList();
+    aux.listQuad = addQuad(aux.listQuad, aux2.listQuad );
+    aux.NameResult = aux2.NameResult;
+    return aux;
 }
 
 t_valuereturns out(){
+    t_valuereturns aux;
+    aux.listQuad = NULL;
+    char *lexema;
+    char *temp = genTemp();
     if (token_atual.ttoken==STR){
-          consome_token(STR);
-    }else if (token_atual.ttoken==IDENT){
-          consome_token(IDENT);
+          lexema = consome_token(STR);
+    }else if (token_atual.ttoken==NUMfloat){
+          lexema = consome_token(NUMfloat);
     }else if (token_atual.ttoken==NUMint){
-          consome_token(NUMint);
+          lexema = consome_token(NUMint);
     }else{
-          consome_token(NUMfloat);
+          lexema = consome_token(IDENT);
     }
+    Quad *q1 = genQuad((char*)"=",temp,lexema,NULL);
+    Quad *q2 = genQuad((char*)"CALL",(char*)"PRINT",temp,NULL);
+    aux.listQuad = addQuad(aux.listQuad, q1);
+    aux.listQuad = addQuad(aux.listQuad, q2);
+    aux.NameResult = temp;
+    return aux;
 }
 
 t_valuereturns restOutList(){
@@ -281,7 +301,9 @@ t_valuereturns restOutList(){
     if (token_atual.ttoken==VIRG){
         consome_token(VIRG);
         aux = out();
-        aux = restOutList();
+        aux2 = restOutList();
+        aux.listQuad = addQuad(aux.listQuad, aux2.listQuad);
+        aux.NameResult = aux2.NameResult;
     }
     return aux;
 }
@@ -295,8 +317,8 @@ t_valuereturns whileStmt(){
     aux2 = stmt();
     char *labReturn = genLabel();
     char *labExit   = genLabel();
-    Quad *q1        = genQuad((char*)"WHILE",aux.NameResult,labReturn,labExit);
-    Quad *q1_5      = genQuad((char*)"WHILE",aux.NameResult,labReturn,labExit);
+    Quad *q1        = genQuad((char*)"IF",aux.NameResult,labReturn,labExit);
+    Quad *q1_5      = genQuad((char*)"IF",aux.NameResult,labReturn,labExit);
     Quad *q2        = genQuad((char*)"LABEL",labReturn,NULL,NULL);
     Quad *q3        = genQuad((char*)"LABEL",labExit,NULL,NULL);
     aux.listQuad    = addQuad(aux.listQuad, q1);
@@ -611,6 +633,7 @@ t_valuereturns uno(){
 
 t_valuereturns fator(){
   t_valuereturns aux;
+  aux.listQuad = NULL;
   if (token_atual.ttoken==ABRIPAR){
       consome_token(ABRIPAR);
       aux = atrib();
@@ -643,6 +666,7 @@ t_valuereturns fator(){
       aux.NameResult = temp;
       // return 1 se IDENT
       aux.bool_leftValue = 1;
+
   }else{
       char *lexema = consome_token(NUMint);
       char *temp   = genTemp();

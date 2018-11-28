@@ -8,21 +8,17 @@
 // aumentando a linha de inicio
 
 int main() {
-	int aba, bola, i;
-	/*
-	if (!aba){
-			aba = 99+10;
-	}else{
-			aba = -99;
+  int aba, i;
+	
+	for(aba=10;aba<100;aba=aba+10){
+	aba = 10+aba;
 	}
-	while(!aba){
-			aba = 10;
-	}
-	scan("ola",aba);
-	*/
 
-	for(i=0;i<5;i=i+1){
-			bola = 1090;
-			aba = 99+10;
+	for(aba=10;aba<100;aba=aba+5){
+	//		while(!i){
+				//print("ABA",aba);
+		//		scan("OLA",aba);
+				//print("ola"," mundo",aba);
 	}
-	}
+	//}
+}
