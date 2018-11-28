@@ -16,7 +16,8 @@ struct quad{
 };
 
 typedef struct{
-    char  id_var[32];
+    char  *id_var;
+    char  *temp;
 }t_variable;
 
 extern unsigned int lenVariables;
