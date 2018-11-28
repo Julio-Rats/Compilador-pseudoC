@@ -22,6 +22,7 @@ void parser(){
     rewind(file_src);
     token_atual = getToken(); //Inicio do Lexico
     function();
+    consome_token(FOE);
 }
 
 void function(){
@@ -255,29 +256,53 @@ void elsePart(){
 }
 
 void expr(){
-     atrib();
+    t_valuereturns aux;
+    aux = atrib();
+    if (aux.listQuad)
+      for(Quad *q=aux.listQuad;q;q=q->next){
+          if (q->param1)
+            printf("(%s, ", q->param1);
+          if (q->param2)
+            printf("%s, ", q->param2);
+          if (q->param3)
+            printf("%s, ", q->param3);
+          else
+            printf(")\n");
+          if (q->param4)
+            printf("%s)\n", q->param4);
+          else
+            printf(")\n");
+      }
+
 }
 
 t_valuereturns atrib(){
     t_valuereturns aux, aux2;
     aux  = or();
-    aux2 = restoAtrib();
+    aux2 = restoAtrib(aux.NameResult);
+    // printf("%d = %d\n", aux.bool_leftValue, aux2.bool_leftValue);
     if (!((aux.bool_leftValue)||(aux2.bool_leftValue))){
         fprintf(stderr, "\nErro de Atribuição de Variavel, linha %d coluna %d\n\n",
                 token_atual.linha, token_atual.coluna);
+        fclose(file_src);
         exit(3);
     }
+    aux.listQuad   = addQuad(aux.listQuad, aux2.listQuad);
+    aux.NameResult = aux2.NameResult;
+    return aux;
 }
 
-t_valuereturns restoAtrib(){
+t_valuereturns restoAtrib(char *parametro){
     t_valuereturns aux;
-    aux.bool_leftValue = 0;
+    aux.listQuad = NULL;
     if (token_atual.ttoken==ATRIB){
         consome_token(ATRIB);
-        atrib();
-        aux.bool_leftValue = 0;
+        aux = atrib();
+        Quad *q1 = genQuad((char*)"=",parametro,parametro,aux.NameResult);
+        aux.listQuad = addQuad(aux.listQuad,q1);
     }else{
         aux.bool_leftValue = 1;
+        aux.NameResult = parametro;
     }
     return aux;
 }
@@ -285,53 +310,68 @@ t_valuereturns restoAtrib(){
 t_valuereturns or(){
     t_valuereturns aux, aux2;
     aux  = and();
-    aux2 = restoOr();
+    aux2 = restoOr(aux.NameResult);
+    aux.listQuad   = addQuad(aux.listQuad, aux2.listQuad);
+    aux.NameResult = aux2.NameResult;
     aux.bool_leftValue &= aux2.bool_leftValue;
     return aux;
 }
 
-t_valuereturns restoOr(){
-    t_valuereturns aux;
-    aux.bool_leftValue = 0;
+t_valuereturns restoOr(char *parametro){
+    t_valuereturns aux, aux2;
+    aux.listQuad = NULL;
     if (token_atual.ttoken==OR){
         consome_token(OR);
-        and();
-        restoOr();
+        aux      = and();
+        aux2     = restoOr(aux.NameResult);
+        Quad *q1 = genQuad((char*)"||",parametro,parametro,aux.NameResult);
+        aux.listQuad = addQuad(aux.listQuad,q1);
+        aux.listQuad = addQuad(aux.listQuad,aux2.listQuad);
     }else{
         aux.bool_leftValue = 1;
     }
+    aux.NameResult     = parametro;
     return aux;
 }
 
 t_valuereturns and(){
     t_valuereturns aux, aux2;
     aux  = not();
-    aux2 = restoAnd();
+    aux2 = restoAnd(aux.NameResult);
+    aux.listQuad   = addQuad(aux.listQuad, aux2.listQuad);
+    aux.NameResult = aux2.NameResult;
     aux.bool_leftValue &= aux2.bool_leftValue;
     return aux;
 }
 
-t_valuereturns restoAnd(){
-    t_valuereturns aux;
-    aux.bool_leftValue = 0;
+t_valuereturns restoAnd(char *parametro){
+    t_valuereturns aux, aux2;
+    aux.listQuad = NULL;
     if (token_atual.ttoken==AND){
         consome_token(AND);
-        not();
-        restoAnd();
+        aux  = not();
+        aux2         = restoAnd(aux.NameResult);
+        Quad *q1     = genQuad((char*)"&&",parametro,parametro,aux.NameResult);
+        aux.listQuad = addQuad(aux.listQuad,q1);
+        aux.listQuad = addQuad(aux.listQuad,aux2.listQuad);
     }else{
         aux.bool_leftValue = 1;
     }
+    aux.NameResult = parametro;
     return aux;
 }
 
 t_valuereturns not(){
     t_valuereturns aux;
-    aux.bool_leftValue = 0;
+    // aux.bool_leftValue = 0;
     if (token_atual.ttoken==NOT){
         consome_token(NOT);
-        not();
+        aux = not();
+        char *temp     = genTemp();
+        Quad *q1       = genQuad((char*)"!",temp,aux.NameResult,NULL);
+        aux.listQuad   = addQuad(aux.listQuad,q1);
     }else{
-        aux = rel();
+        aux = rel(); // nao muda
     }
     return aux;
 }
@@ -339,35 +379,56 @@ t_valuereturns not(){
 t_valuereturns rel(){
    t_valuereturns aux, aux2;
     aux  = add();
-    aux2 = restorel();
+    aux2 = restorel(aux.NameResult);
+    aux.listQuad   = addQuad(aux.listQuad, aux2.listQuad);
+    aux.NameResult = aux2.NameResult;
     aux.bool_leftValue &= aux2.bool_leftValue;
     return aux;
 }
 
-t_valuereturns restorel(){
+t_valuereturns restorel(char *parametro){
     t_valuereturns aux;
-    aux.bool_leftValue = 0;
+    aux.listQuad = NULL;
     if (token_atual.ttoken==IGUAL){
         consome_token(IGUAL);
-        add();
+        aux = add();
+        Quad *q1       = genQuad((char*)"==",parametro,parametro,aux.NameResult);
+        aux.listQuad   = addQuad(aux.listQuad,q1);
+        aux.bool_leftValue = 0;
     }else if (token_atual.ttoken==NIGUAL){
         consome_token(NIGUAL);
-        add();
+        aux = add();
+        Quad *q1       = genQuad((char*)"!=",parametro,parametro,aux.NameResult);
+        aux.listQuad   = addQuad(aux.listQuad,q1);
+        aux.bool_leftValue = 0;
     }else if (token_atual.ttoken==MENOR){
         consome_token(MENOR);
-        add();
+        aux = add();
+        Quad *q1       = genQuad((char*)"<",parametro,parametro,aux.NameResult);
+        aux.listQuad   = addQuad(aux.listQuad,q1);
+        aux.bool_leftValue = 0;
     }else if (token_atual.ttoken==MENORIGUAL){
         consome_token(MENORIGUAL);
-        add();
+        aux = add();
+        Quad *q1       = genQuad((char*)"<=",parametro,parametro,aux.NameResult);
+        aux.listQuad   = addQuad(aux.listQuad,q1);
+        aux.bool_leftValue = 0;
     }else if (token_atual.ttoken==MAIOR){
         consome_token(MAIOR);
-        add();
+        aux = add();
+        Quad *q1       = genQuad((char*)">",parametro,parametro,aux.NameResult);
+        aux.listQuad   = addQuad(aux.listQuad,q1);
+        aux.bool_leftValue = 0;
     }else if (token_atual.ttoken==MAIORIGUAL){
         consome_token(MAIORIGUAL);
-        add();
+        aux = add();
+        Quad *q1       = genQuad((char*)">=",parametro,parametro,aux.NameResult);
+        aux.listQuad   = addQuad(aux.listQuad,q1);
+        aux.bool_leftValue = 0;
     }else{
         aux.bool_leftValue = 1;
     }
+    aux.NameResult = parametro;
     return aux;
 }
 
@@ -375,25 +436,36 @@ t_valuereturns add(){
     t_valuereturns aux, aux2;
     aux  = mult();
     aux2 = restoAdd(aux.NameResult);
-
+    aux.listQuad   = addQuad(aux.listQuad,aux2.listQuad);
+    aux.NameResult = aux2.NameResult;
     aux.bool_leftValue &= aux2.bool_leftValue;
     return aux;
 }
 
 t_valuereturns restoAdd(char* parametro){
     t_valuereturns aux,aux2;
-    aux.bool_leftValue = 0;
+    aux.listQuad = NULL;
     if (token_atual.ttoken==SOMA){
         consome_token(SOMA);
         aux  = mult();
-        aux2 = restoAdd(parametro);
-
+        Quad *q1 = genQuad((char*)"+",parametro,parametro,aux.NameResult);
+        aux.listQuad   = addQuad(aux.listQuad,q1);
+        aux2 = restoAdd(parametro); // WALACE
+        aux.listQuad   = addQuad(aux.listQuad,aux2.listQuad);
+        aux.NameResult = aux2.NameResult;
+        aux.bool_leftValue = 0;
     }else if (token_atual.ttoken==SUB){
         consome_token(SUB);
         aux  = mult();
-        aux2 = restoAdd(parametro);
+        Quad *q1 = genQuad((char*)"-",parametro,parametro,aux.NameResult);
+        aux.listQuad   = addQuad(aux.listQuad,q1);
+        aux2 = restoAdd(aux.NameResult); // WALACE
+        aux.listQuad   = addQuad(aux.listQuad,aux2.listQuad);
+        aux.NameResult = aux2.NameResult;
+        aux.bool_leftValue = 0;
     }else{
         aux.bool_leftValue = 1;
+        aux.NameResult     = parametro;
     }
     return  aux;
 }
@@ -401,6 +473,7 @@ t_valuereturns restoAdd(char* parametro){
 t_valuereturns mult(){
     t_valuereturns aux, aux2;
     aux  = uno();
+    // printf("%s\n", aux.NameResult);
     aux2 = restoMult(aux.NameResult);
     aux.listQuad   = addQuad(aux.listQuad,aux2.listQuad);
     aux.NameResult = aux2.NameResult;
@@ -414,39 +487,40 @@ t_valuereturns restoMult(char *parametro){
     // aux.bool_leftValue = 0;
     if (token_atual.ttoken==MULT){
         consome_token(MULT);
-        aux = uno();
-        Quad *q1 = genQuad("*",parametro,parametro,aux.NameResult);
-        aux.listQuad = addQuad(aux.listQuad,q1);
+        aux      = uno();
+        Quad *q1 = genQuad((char*)"*",parametro,parametro,aux.NameResult);
+        aux.listQuad       = addQuad(aux.listQuad,q1);
         aux.bool_leftValue = 0;
     }else if (token_atual.ttoken==DIVI){
         consome_token(DIVI);
         aux = uno();
-        Quad *q1 = genQuad("/",parametro,parametro,aux.NameResult);
+        Quad *q1     = genQuad((char*)"/",parametro,parametro,aux.NameResult);
         aux.listQuad = addQuad(aux.listQuad,q1);
         aux.bool_leftValue = 0;
     }else if (token_atual.ttoken==MOD){
         consome_token(MOD);
-        aux = uno();
-        Quad *q1 = genQuad("%",parametro,parametro,aux.NameResult);
+        aux      = uno();
+        Quad *q1 = genQuad((char*)"%",parametro,parametro,aux.NameResult);
         aux.listQuad = addQuad(aux.listQuad,q1);
         aux.bool_leftValue = 0;
     }else{
         aux.bool_leftValue = 1;
-        aux.NameResult = parametro;
+        aux.NameResult = parametro; // WALACE
     }
     return aux;
 }
 
 t_valuereturns uno(){
   t_valuereturns aux;
-  aux.listQuad = NULL;
+  // aux.listQuad = NULL;
   if (token_atual.ttoken==SOMA){
+      consome_token(SOMA);
       aux = uno();
       aux.bool_leftValue = 0;
   }else if (token_atual.ttoken==SUB){
       consome_token(SUB);
-      aux = uno();
-      Quad *q1 = genQuad("-",aux.NameResult,"0",aux.NameResult);
+      aux      = uno();
+      Quad *q1 = genQuad((char*)"-",aux.NameResult,"0",aux.NameResult);
       aux.listQuad = addQuad(aux.listQuad,q1);
       aux.bool_leftValue = 0;
   }else{
@@ -457,12 +531,9 @@ t_valuereturns uno(){
 
 t_valuereturns fator(){
   t_valuereturns aux;
-  aux.listQuad   = NULL;
-  aux.NameResult = NULL;
   if (token_atual.ttoken==ABRIPAR){
       consome_token(ABRIPAR);
-      // aux = atrib();
-      atrib();
+      aux = atrib();
       consome_token(FECHAPAR);
       aux.bool_leftValue = 0;
   }else if (token_atual.ttoken==NUMfloat){
@@ -487,7 +558,7 @@ t_valuereturns fator(){
           exit(3);
       }
       char *temp     = genTemp();
-      Quad *q1       = genQuad((char*)"=",temp,lexema,NULL);
+      Quad *q1       = genQuad((char*)"var",temp,lexema,NULL);
       aux.listQuad   = addQuad(aux.listQuad,q1);
       aux.NameResult = temp;
       // return 1 se IDENT

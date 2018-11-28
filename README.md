@@ -1,8 +1,7 @@
 # IFMG_TRAB_COMPILADORES
-(EM PROGRESSO !!) Compilador feito (em fase de construção) em C, para linguagem batizada de miniC.
+                       (EM PROGRESSO !!)
+Compilador em fase de construção na linguagem C, para gramatica nomeada de miniC.
 
-GRAMATICA DA LINGUAGEM NO ARQUIVO "miniC.txt" no repositorio.
+GRAMATICA LL1 NO ARQUIVO "miniC.txt".
 
-Trabalho para diciplina de Compiladores (2018 IFMG), professor Walace Rodrigues.
-
-Sendo desenvolvido as fases do analisador lexico e sintatico.
+Trabalho diciplinar, da diciplina de Compiladores (2018 IFMG campus Formiga),Professor Dr.Walace Rodrigues.
