@@ -40,6 +40,209 @@ Quad* addQuad(Quad* destine, Quad* source){
       return source;
 }
 
-void exec(){
-    
+void exec(Quad *lista){
+    Quad *aux = lista;
+    while(aux){
+        int op = decod_inst(aux->param1);
+        int type;
+        float valor;
+        switch (op) {
+          case 0:
+              type  = getType(aux->param2);
+              valor = getValue(aux->param3);
+              add_var(aux->param2, valor, type);
+          break;
+
+          case 1:
+              valor = getValue(aux->param3) == getValue(aux->param4);
+              type  = getType(aux->param2);
+              add_var(aux->param2, valor, type);
+          break;
+
+          case 2:
+              valor = getValue(aux->param3) > getValue(aux->param4);
+              type  = getType(aux->param2);
+              add_var(aux->param2, valor, type);
+          break;
+
+          case 3:
+              valor = getValue(aux->param3) >= getValue(aux->param4);
+              type  = getType(aux->param2);
+              add_var(aux->param2, valor, type);
+          break;
+
+          case 4:
+              valor = getValue(aux->param3) < getValue(aux->param4);
+              type  = getType(aux->param2);
+              add_var(aux->param2, valor, type);
+          break;
+
+          case 5:
+              valor = getValue(aux->param3) <= getValue(aux->param4);
+              type  = getType(aux->param2);
+              add_var(aux->param2, valor, type);
+          break;
+
+          case 6:
+              valor = getValue(aux->param3) != getValue(aux->param4);
+              type  = getType(aux->param2);
+              add_var(aux->param2, valor, type);
+          break;
+
+          case 7:
+              valor = !getValue(aux->param3);
+              type  = getType(aux->param2);
+              add_var(aux->param2, valor, type);
+          break;
+
+          case 8:
+              valor = getValue(aux->param3) && getValue(aux->param4);
+              type  = getType(aux->param2);
+              add_var(aux->param2, valor, type);
+          break;
+
+          case 9:
+              valor = getValue(aux->param3) || getValue(aux->param4);
+              type  = getType(aux->param2);
+              add_var(aux->param2, valor, type);
+          break;
+
+
+          case 16:
+              valor = getValue(aux->param3)+getValue(aux->param4);
+              type  = getType(aux->param2);
+              add_var(aux->param2, valor, type);
+          break;
+
+          case 17:
+              valor = getValue(aux->param3)-getValue(aux->param4);
+              type  = getType(aux->param2);
+              add_var(aux->param2, valor, type);
+          break;
+          case 18:
+              valor = getValue(aux->param3)*getValue(aux->param4);
+              type  = getType(aux->param2);
+              add_var(aux->param2, valor, type);
+          break;
+          case 19:
+              valor = getValue(aux->param3)/getValue(aux->param4);
+              type  = getType(aux->param2);
+              add_var(aux->param2, valor, type);
+          break;
+          case 20:
+              valor = (int)getValue(aux->param3) % (int)getValue(aux->param4);
+              type  = getType(aux->param2);
+              add_var(aux->param2, valor, type);
+          break;
+        }
+        aux = aux->next;
+    }
+    for (int i=0;i<lenVarambiente;i++)
+        printf("%s - %.2f - %d\n", listVarambiente[i].id_var, listVarambiente[i].value_numeric, listVarambiente[i].type);
+
+}
+
+int decod_inst(char *opcode){
+    if (strcmp(opcode, "=")==0){
+          return 0;
+    }else if (strcmp(opcode, "==")==0){
+          return 1;
+    }else if (strcmp(opcode, ">")==0){
+          return 2;
+    }else if (strcmp(opcode, ">=")==0){
+          return 3;
+    }else if (strcmp(opcode, "<")==0){
+          return 4;
+    }else if (strcmp(opcode, "<=")==0){
+          return 5;
+    }else if (strcmp(opcode, "!=")==0){
+          return 6;
+    }else if (strcmp(opcode, "!")==0){
+          return 7;
+    }else if (strcmp(opcode, "&&")==0){
+          return 8;
+    }else if (strcmp(opcode, "||")==0){
+          return 9;
+    }else if (strcmp(opcode, "IF")==0){
+          return 10;
+    }else if (strcmp(opcode, "JUMP")==0){
+          return 11;
+    }else if (strcmp(opcode, "CALL")==0){
+          return 12;
+    }else if (strcmp(opcode, "PRINT")==0){
+          return 13;
+    }else if (strcmp(opcode, "SCAN")==0){
+          return 14;
+    }else if (strcmp(opcode, "LABEL")==0){
+          return 15;
+    }else if (strcmp(opcode, "+")==0){
+          return 16;
+    }else if (strcmp(opcode, "-")==0){
+          return 17;
+    }else if (strcmp(opcode, "*")==0){
+          return 18;
+    }else if (strcmp(opcode, "/")==0){
+          return 19;
+    }else if (strcmp(opcode, "%")==0){
+          return 20;
+    }
+    return -1;
+}
+
+void add_var(char *id, float value,  int type){
+    if (lenVarambiente == 0){
+        listVarambiente = malloc(sizeof(t_varambiente));
+        lenVarambiente  = 1;
+        listVarambiente[0].id_var = id;
+        if (type == 0){
+            listVarambiente[0].value_numeric = trunc(value);
+            listVarambiente[0].type = 0;
+        }else if (type == 1){
+            listVarambiente[0].value_numeric = value;
+            listVarambiente[0].type = 1;
+        }
+        return;
+    }
+    for(int i=0;i<lenVarambiente;i++)
+        if (strcmp(listVarambiente[i].id_var, id)==0){
+          if (type == 0){
+              listVarambiente[i].value_numeric = trunc(value);
+              listVarambiente[i].type = 0;
+          }else if (type == 1){
+              listVarambiente[i].value_numeric = value;
+              listVarambiente[i].type = 1;
+          }
+          return;
+        }
+
+    listVarambiente = realloc(listVarambiente, sizeof(t_varambiente)*(++lenVarambiente));
+    listVarambiente[(lenVarambiente)-1].id_var = id;
+    listVarambiente[(lenVarambiente)-1].type   = type;
+
+    if (type == 0){
+        listVarambiente[(lenVarambiente)-1].value_numeric = value;
+    }else if (type == 1){
+        listVarambiente[(lenVarambiente)-1].value_numeric = value;
+    }
+
+}
+
+int getType(char *lexema){
+    for(int i=0;i<lenVariables;i++){
+        char *aux = malloc (sizeof(char)*40);
+        sprintf(aux,"_%d%s",listVariables[i].nivel, listVariables[i].id_var);
+        if (strcmp(lexema, aux)==0){
+          return listVariables[i].type;
+        }
+    }
+    return 1;
+}
+
+float getValue(char *lexema){
+    for(int i=0;i<lenVarambiente;i++){
+        if (strcmp(lexema, listVarambiente[i].id_var)==0){
+            return listVarambiente[i].value_numeric;
+        }
+    }
+    return atof(lexema);
 }

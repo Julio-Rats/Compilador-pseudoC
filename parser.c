@@ -18,14 +18,16 @@ void error(TToken consome){
     exit(0);
 }
 
-void parser(){
+t_valuereturns parser(){
+    t_valuereturns aux;
     rewind(file_src);
     token_atual = getToken(); //Inicio do Lexico
-    function();
+    aux = function();
     consome_token(FOE);
+    return aux;
 }
 
-void function(){
+t_valuereturns function(){
     t_valuereturns aux;
     type();
     consome_token(IDENT);
@@ -33,28 +35,7 @@ void function(){
     arglist();
     consome_token(FECHAPAR);
     aux = bloco(NULL,NULL);
-    if (aux.listQuad){
-      for(Quad *q=aux.listQuad;q;q=q->next){
-          if (q->param1)
-            printf("(%s", q->param1);
-            else
-                printf("olocoo\n");
-          if (q->param2)
-            printf(", %s", q->param2);
-          if (q->param3)
-            printf(", %s", q->param3);
-          else{
-            printf(")\n");
-            continue;
-            }
-          if (q->param4)
-            printf(", %s)\n", q->param4);
-          else
-            printf(")\n");
-      }}else{
-          printf("NOTHING\n");
-      }
-
+    return aux;
 }
 
 void arglist(){
@@ -68,7 +49,11 @@ void arg(){
     int tipo    = type();
     Token token = token_atual;
     consome_token(IDENT);
+    if (nivel_variaveis!=1){
+    nivel_variaveis = 1;
+    }
     add_id(token, tipo);
+    nivel_variaveis = 0;
 }
 
 void restoArglist(){

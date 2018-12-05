@@ -16,15 +16,18 @@ sum(1..v)(Xdj) = 1; // garante a chegada
 
 // aumentando a linha de inicio
 
-int main() {
-  int a,b,c;
-  while(a)
-    a = 10;
+int main(int f) {
+  float a,b,c;
+  float d;
+  a = 10;
+  b= 0;
+  while(a&&b)
+    c = 9/10;
   for(a=0 ; a>10;a=a+1){
       b = a;
       break;
-
+      b = a+c;
   }
   scan("ola",a);
-  print("a = ",,"ola");
+  print("a = ",a,"ola");
 }

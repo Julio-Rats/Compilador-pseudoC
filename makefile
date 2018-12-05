@@ -1,7 +1,7 @@
 all: compilador clear
 
 compilador: main
-			gcc  -o compilador *.o
+			gcc  -o compilador *.o -lm
 
 clear:
 			rm *.h.gch *.o
