@@ -3,22 +3,28 @@
 **
 **  - fatora um inteiro lido.
 **==============================
+
+minimize sum(1..v,1..v)(Cij*Xij)
+
+sum(1..v)(Xij) <= 1; ,(1..v) // maximo uma chegada
+
+sum(1..v)(Xoj) = 1; // garente a saida
+
+sum(1..v)(Xdj) = 1; // garante a chegada
+
 */
 
 // aumentando a linha de inicio
 
 int main() {
-  int aba, i;
-	
-	for(aba=10;aba<100;aba=aba+10){
-	aba = 10+aba;
-	}
+  int a,b,c;
+  while(a)
+    a = 10;
+  for(a=0 ; a>10;a=a+1){
+      b = a;
+      break;
 
-	for(aba=10;aba<100;aba=aba+5){
-	//		while(!i){
-				//print("ABA",aba);
-		//		scan("OLA",aba);
-				//print("ola"," mundo",aba);
-	}
-	//}
+  }
+  scan("ola",a);
+  print("a = ",,"ola");
 }

@@ -17,6 +17,10 @@ typedef struct{
 
 Token  token_atual;
 
+//Variavel que indica o nivel atual de variaveis
+
+static u_int8_t nivel_variaveis = 0;
+
 /*
     Funções que compõem o analisador sintatico, expressado a gramatica da linguagem
       a ser compilada.
@@ -24,19 +28,22 @@ Token  token_atual;
 
 char* decod_Token(TToken token);
 char* consome_token(TToken consome);
+void  deleta_variaveis();
+char* busca_variaveis(char *lexema);
 void  error(TToken consome);
+void  add_id(Token token, int tipo);
 void  parser();
 void  function();
 void  arglist();
 void  arg();
 void  restoArglist();
 int   type();
-void  declaration();
-void  identList(int vartype);
-void  restoIdentList(int vartype);
-t_valuereturns  bloco();
-t_valuereturns  stmtList();
-t_valuereturns  stmt();
+t_valuereturns  declaration();
+t_valuereturns  identList(int vartype);
+t_valuereturns  restoIdentList(int vartype);
+t_valuereturns bloco(char* jump_cont, char* jump_exit);
+t_valuereturns stmtList(char* jump_cont, char* jump_exit);
+t_valuereturns stmt(char* jump_cont, char* jump_exit);
 t_valuereturns forStmt();
 t_valuereturns optExpr();
 t_valuereturns ioStmt();

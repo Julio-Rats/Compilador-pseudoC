@@ -52,5 +52,10 @@ int main(int argc, char *argv[]){
 	// 		printf("%s\n", aux->param4);
 	// }
   fclose (file_src);
+
+	for(int i=0;i<lenVariables;i++)
+			printf("var = %s\n", listVariables[i].id_var);
+
+	printf("%d\n", lenVariables);
 	return 0;
 }

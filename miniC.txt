@@ -8,7 +8,9 @@
 <restoArgList> -> ',' <argList> | & ;
 <type> -> 'int' | 'float' ;
 <bloco> -> '{' <stmtList> '}' ;
-<stmtList> -> <stmt> <stmtList> | & ;
+<stmtList> -> <stmt> <stmtList>
+            | <declaration> <stmtList>
+            | &;
 <stmt> -> <forStmt>
    | <ioStmt>
    | <whileStmt>
@@ -17,8 +19,6 @@
    | <bloco>
    | 'break' ';'
    | 'continue' ';'
-   | 'return' ';'
-   | <declaration>
    | ';' ;
 
 #---------------------------

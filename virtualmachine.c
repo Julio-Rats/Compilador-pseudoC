@@ -39,3 +39,7 @@ Quad* addQuad(Quad* destine, Quad* source){
       }
       return source;
 }
+
+void exec(){
+    
+}

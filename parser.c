@@ -32,7 +32,7 @@ void function(){
     consome_token(ABRIPAR);
     arglist();
     consome_token(FECHAPAR);
-    aux = bloco();
+    aux = bloco(NULL,NULL);
     if (aux.listQuad){
       for(Quad *q=aux.listQuad;q;q=q->next){
           if (q->param1)
@@ -65,8 +65,10 @@ void arglist(){
 }
 
 void arg(){
-    type();
+    int tipo    = type();
+    Token token = token_atual;
     consome_token(IDENT);
+    add_id(token, tipo);
 }
 
 void restoArglist(){
@@ -85,32 +87,38 @@ int type(){
     return 1;
 }
 
-t_valuereturns bloco(){
+t_valuereturns bloco(char* jump_cont, char* jump_exit){
     t_valuereturns aux;
     consome_token(ABRICHAV);
-    aux = stmtList();
+    nivel_variaveis++;
+    aux = stmtList(jump_cont, jump_exit);
+    deleta_variaveis();
+    nivel_variaveis--;
     consome_token(FECHACHAV);
     return aux;
 }
 
-t_valuereturns stmtList(){
+t_valuereturns stmtList(char* jump_cont, char* jump_exit){
     t_valuereturns aux, aux2;
     aux.listQuad = NULL;
     if (    (token_atual.ttoken == FOR)   ||(token_atual.ttoken==PRINT)   ||(token_atual.ttoken==SCAN)
           ||(token_atual.ttoken==WHILE)   ||(token_atual.ttoken==NOT)     ||(token_atual.ttoken==ABRIPAR)
           ||(token_atual.ttoken==SOMA)    ||(token_atual.ttoken==SUB)     ||(token_atual.ttoken==IDENT)
           ||(token_atual.ttoken==NUMint)  ||(token_atual.ttoken==NUMfloat)||(token_atual.ttoken==IF)
-          ||(token_atual.ttoken==ABRICHAV)||(token_atual.ttoken==FLOAT)   ||(token_atual.ttoken==INT)
-          ||(token_atual.ttoken==PONTVIRG)||(token_atual.ttoken==BREAK)   ||(token_atual.ttoken==CONTINUE)
-          ||(token_atual.ttoken==RETURN)){
-              aux  = stmt();
-              aux2 = stmtList();
+          ||(token_atual.ttoken==ABRICHAV)||(token_atual.ttoken==PONTVIRG)||(token_atual.ttoken==BREAK)
+          ||(token_atual.ttoken==CONTINUE)||(token_atual.ttoken==RETURN)){
+              aux  = stmt(jump_cont, jump_exit);
+              aux2 = stmtList(jump_cont, jump_exit);
+              aux.listQuad = addQuad(aux.listQuad,aux2.listQuad);
+          }else if ((token_atual.ttoken==FLOAT)||(token_atual.ttoken==INT)){
+              aux  = declaration();
+              aux2 = stmtList(jump_cont, jump_exit);
               aux.listQuad = addQuad(aux.listQuad,aux2.listQuad);
           }
     return aux;
 }
 
-t_valuereturns stmt(){
+t_valuereturns stmt(char* jump_cont, char* jump_exit){
     t_valuereturns aux;
     aux.listQuad = NULL;
     if (token_atual.ttoken==FOR){
@@ -128,17 +136,26 @@ t_valuereturns stmt(){
     }else if (token_atual.ttoken==IF){
           aux = ifStmt();
     }else if (token_atual.ttoken==ABRICHAV){
-          aux = bloco();
-    }else if ((token_atual.ttoken==FLOAT)||(token_atual.ttoken==INT)){
-          declaration();
+          aux = bloco(jump_cont, jump_exit);
     }else if (token_atual.ttoken==CONTINUE){
+          if (!jump_cont){
+              fprintf(stderr, "\nERROR: DECLARAÇÃO INVALIDA 'CONTINUE', LINHA %d coluna %d\n\n",token_atual.linha, token_atual.coluna);
+              fclose(file_src);
+              exit(3);
+          }
           consome_token(CONTINUE);
+          Quad *q = genQuad((char*)"JUMP",jump_cont,NULL,NULL);
+          aux.listQuad = addQuad(aux.listQuad, q);
           consome_token(PONTVIRG);
     }else if (token_atual.ttoken==BREAK){
+          if (!jump_cont){
+              fprintf(stderr, "\nERROR: DECLARAÇÃO INVALIDA 'BREAK', LINHA %d coluna %d\n\n",token_atual.linha, token_atual.coluna);
+              fclose(file_src);
+              exit(3);
+          }
           consome_token(BREAK);
-          consome_token(PONTVIRG);
-    }else if (token_atual.ttoken==RETURN){
-          consome_token(RETURN);
+          Quad *q = genQuad((char*)"JUMP",jump_exit,NULL,NULL);
+          aux.listQuad = addQuad(aux.listQuad, q);
           consome_token(PONTVIRG);
     }else{
           consome_token(PONTVIRG);
@@ -146,53 +163,41 @@ t_valuereturns stmt(){
     return aux;
 }
 
-void declaration(){
+t_valuereturns declaration(){
+    t_valuereturns aux;
     int vartype     = type();
     int numvarantes = ((lenVariables-1)>=0) ? lenVariables : 0;
-    identList(vartype);
+    aux = identList(vartype);
     consome_token(PONTVIRG);
+    return aux;
 
 }
 
-void identList(int vartype){
-    int coluna = token_atual.coluna;
-    char *var  = consome_token(IDENT);
-    if (lenVariables == 0){
-        listVariables = malloc(sizeof(t_variable));
-        lenVariables  = 1;
-        listVariables[0].id_var = malloc(sizeof(char)*32);
-        strcpy(listVariables[0].id_var,var);
-    }else{
-        for (int i=0; i<lenVariables;i++)
-            if (strcmp(var,listVariables[i].id_var)==0){
-                fprintf(stderr, "\nError de Compilação: Linha %d, Coluna %d\n\tMúltipla Declaração de Variavel,  Variavel = \'%s\'\n\n",token_atual.linha, coluna, var);
-                fclose(file_src);
-                exit(3);
-            }
-        listVariables= realloc(listVariables,sizeof(t_variable)*(++(lenVariables)));
-        listVariables[(lenVariables)-1].id_var = malloc(sizeof(char)*32);
-        strcpy(listVariables[(lenVariables)-1].id_var,var);
-    }
-    restoIdentList(vartype);
+t_valuereturns identList(int vartype){
+    t_valuereturns aux;
+    Token atual = token_atual;
+    char* lexema = consome_token(IDENT);
+    add_id(atual, vartype);
+    aux = restoIdentList(vartype);
+    Quad *q1     = genQuad((char*)"=",busca_variaveis(lexema),"0",NULL);
+    aux.listQuad = addQuad(aux.listQuad, q1);
+    return aux;
 
 }
 
-void restoIdentList(int vartype){
+t_valuereturns restoIdentList(int vartype){
+    t_valuereturns aux;
+    aux.listQuad = NULL;
     if (token_atual.ttoken==VIRG){
         consome_token(VIRG);
-        int coluna = token_atual.coluna;
-        char *var = consome_token(IDENT);
-        for (int i=0; i<lenVariables;i++)
-            if (strcmp(var,listVariables[i].id_var)==0){
-                fprintf(stderr, "\nError de Compilação: Linha %d, Coluna %d\n\tMúltipla Declaração de Variavel,  Variavel = \'%s\'\n\n",token_atual.linha, coluna, var);
-                fclose(file_src);
-                exit(3);
-        }
-        listVariables= realloc(listVariables ,sizeof(t_variable)*(++(lenVariables)));
-        listVariables[(lenVariables)-1].id_var = malloc(sizeof(char)*32);
-        strcpy(listVariables[(lenVariables)-1].id_var,var);
-        restoIdentList(vartype);
+        Token token = token_atual;
+        char* lexema = consome_token(IDENT);
+        add_id(token, vartype);
+        aux = restoIdentList(vartype);
+        Quad *q1     = genQuad((char*)"=",busca_variaveis(lexema),"0",NULL);
+        aux.listQuad = addQuad(aux.listQuad, q1);
     }
+    return aux;
 }
 
 t_valuereturns forStmt(){
@@ -205,17 +210,20 @@ t_valuereturns forStmt(){
     consome_token(PONTVIRG);
     aux3 = optExpr();
     consome_token(FECHAPAR);
-    aux4 = stmt();
-    aux.listQuad    = addQuad(aux.listQuad, aux2.listQuad);
     char *labReturn = genLabel();
+    char *labCont   = genLabel();
     char *labExit   = genLabel();
+    aux4 = stmt(labCont, labExit);
     Quad *q1        = genQuad((char*)"IF",aux2.NameResult,labReturn,labExit);
     Quad *q1_5      = genQuad((char*)"IF",aux2.NameResult,labReturn,labExit);
     Quad *q2        = genQuad((char*)"LABEL",labReturn,NULL,NULL);
     Quad *q3        = genQuad((char*)"LABEL",labExit,NULL,NULL);
+    Quad *q4        = genQuad((char*)"LABEL",labCont,NULL,NULL);
+    aux.listQuad    = addQuad(aux.listQuad, aux2.listQuad);
     aux.listQuad    = addQuad(aux.listQuad, q1);
     aux.listQuad    = addQuad(aux.listQuad, q2);
     aux.listQuad    = addQuad(aux.listQuad, aux4.listQuad);
+    aux.listQuad    = addQuad(aux.listQuad, q4);
     aux.listQuad    = addQuad(aux.listQuad, aux3.listQuad);
     aux.listQuad    = addQuad(aux.listQuad, q1_5);
     aux.listQuad    = addQuad(aux.listQuad, q3);
@@ -241,23 +249,15 @@ t_valuereturns ioStmt(){
         consome_token(ABRIPAR);
         char *str = consome_token(STR);
         consome_token(VIRG);
-        char *temp  = genTemp();
-        char *temp1 = genTemp();
         char *id = consome_token(IDENT);
-        Quad *q1 = genQuad((char*)"=",temp,str,NULL);
-        Quad *q2 = genQuad((char*)"=",temp1,id,NULL);
-        Quad *q3 = genQuad((char*)"CALL","SCAN",temp,temp1);
+        Quad *q1 = genQuad((char*)"CALL","SCAN",str,busca_variaveis(id));
         aux.listQuad = addQuad(aux.listQuad, q1);
-        aux.listQuad = addQuad(aux.listQuad, q2);
-        aux.listQuad = addQuad(aux.listQuad, q3);
         consome_token(FECHAPAR);
         consome_token(PONTVIRG);
     }else{
         consome_token(PRINT);
         consome_token(ABRIPAR);
         aux = outList();
-        // Quad *q1 = genQuad((char*)"CALL","PRINT",str,id);
-        // aux.listQuad = addQuad(aux.listQuad, q1);
         consome_token(FECHAPAR);
         consome_token(PONTVIRG);
     }
@@ -277,21 +277,25 @@ t_valuereturns out(){
     t_valuereturns aux;
     aux.listQuad = NULL;
     char *lexema;
-    char *temp = genTemp();
+    Quad *q1;
     if (token_atual.ttoken==STR){
           lexema = consome_token(STR);
+          q1 = genQuad((char*)"CALL",(char*)"PRINT",lexema,NULL);
+          aux.NameResult = lexema;
     }else if (token_atual.ttoken==NUMfloat){
           lexema = consome_token(NUMfloat);
+          q1 = genQuad((char*)"CALL",(char*)"PRINT",lexema,NULL);
+          aux.NameResult = lexema;
     }else if (token_atual.ttoken==NUMint){
           lexema = consome_token(NUMint);
+          q1 = genQuad((char*)"CALL",(char*)"PRINT",lexema,NULL);
+          aux.NameResult = lexema;
     }else{
           lexema = consome_token(IDENT);
+          q1 = genQuad((char*)"CALL",(char*)"PRINT",busca_variaveis(lexema),NULL);
+          aux.NameResult = busca_variaveis(lexema);
     }
-    Quad *q1 = genQuad((char*)"=",temp,lexema,NULL);
-    Quad *q2 = genQuad((char*)"CALL",(char*)"PRINT",temp,NULL);
     aux.listQuad = addQuad(aux.listQuad, q1);
-    aux.listQuad = addQuad(aux.listQuad, q2);
-    aux.NameResult = temp;
     return aux;
 }
 
@@ -314,9 +318,9 @@ t_valuereturns whileStmt(){
     consome_token(ABRIPAR);
     aux  = expr();
     consome_token(FECHAPAR);
-    aux2 = stmt();
     char *labReturn = genLabel();
     char *labExit   = genLabel();
+    aux2 = stmt(labReturn, labExit);
     Quad *q1        = genQuad((char*)"IF",aux.NameResult,labReturn,labExit);
     Quad *q1_5      = genQuad((char*)"IF",aux.NameResult,labReturn,labExit);
     Quad *q2        = genQuad((char*)"LABEL",labReturn,NULL,NULL);
@@ -341,7 +345,7 @@ t_valuereturns ifStmt(){
     consome_token(FECHAPAR);
     Quad *q2     = genQuad((char*)"LABEL",labTrue,NULL,NULL);
     aux.listQuad = addQuad(aux.listQuad, q2);
-    aux2 = stmt();
+    aux2 = stmt(NULL, NULL);
     aux.listQuad = addQuad(aux.listQuad, aux2.listQuad);
     aux3 = elsePart();
     Quad *q4 = genQuad((char*)"LABEL",labFalse,NULL,NULL);
@@ -366,7 +370,7 @@ t_valuereturns elsePart(){
     aux.listQuad = NULL;
     if (token_atual.ttoken==ELSE){
         consome_token(ELSE);
-        aux = stmt();
+        aux = stmt(NULL, NULL);
     }
     return aux;
 }
@@ -399,7 +403,7 @@ t_valuereturns restoAtrib(char *parametro){
     if (token_atual.ttoken==ATRIB){
         consome_token(ATRIB);
         aux = atrib();
-        Quad *q1 = genQuad((char*)"=",parametro,parametro,aux.NameResult);
+        Quad *q1 = genQuad((char*)"=",parametro,aux.NameResult,NULL);
         aux.listQuad = addQuad(aux.listQuad,q1);
     }else{
         aux.bool_leftValue = 1;
@@ -425,10 +429,11 @@ t_valuereturns restoOr(char *parametro){
         consome_token(OR);
         aux      = and();
         aux2     = restoOr(aux.NameResult);
-        Quad *q1       = genQuad((char*)"||",parametro,parametro,aux.NameResult);
+        char *temp = genTemp();
+        Quad *q1       = genQuad((char*)"||",temp,parametro,aux.NameResult);
         aux.listQuad   = addQuad(aux.listQuad,q1);
         aux.listQuad   = addQuad(aux.listQuad,aux2.listQuad);
-        aux.NameResult = aux2.NameResult;
+        aux.NameResult = temp;
     }else{
         aux.bool_leftValue = 1;
         aux.NameResult     = parametro;
@@ -453,10 +458,11 @@ t_valuereturns restoAnd(char *parametro){
         consome_token(AND);
         aux  = not();
         aux2 = restoAnd(aux.NameResult);
-        Quad *q1       = genQuad((char*)"&&",parametro,parametro,aux.NameResult);
+        char *temp = genTemp();
+        Quad *q1       = genQuad((char*)"&&",temp,parametro,aux.NameResult);
         aux.listQuad   = addQuad(aux.listQuad,q1);
         aux.listQuad   = addQuad(aux.listQuad,aux2.listQuad);
-        aux.NameResult = aux2.NameResult;
+        aux.NameResult = temp;
     }else{
         aux.bool_leftValue = 1;
         aux.NameResult = parametro;
@@ -493,45 +499,58 @@ t_valuereturns restorel(char *parametro){
     t_valuereturns aux;
     aux.listQuad = NULL;
     if (token_atual.ttoken==IGUAL){
+        char *temp   = genTemp();
         consome_token(IGUAL);
         aux = add();
-        Quad *q1       = genQuad((char*)"==",parametro,parametro,aux.NameResult);
+        Quad *q1       = genQuad((char*)"==",temp,parametro,aux.NameResult);
         aux.listQuad   = addQuad(aux.listQuad,q1);
+        aux.NameResult = temp;
         aux.bool_leftValue = 0;
     }else if (token_atual.ttoken==NIGUAL){
+        char *temp   = genTemp();
         consome_token(NIGUAL);
         aux = add();
-        Quad *q1       = genQuad((char*)"!=",parametro,parametro,aux.NameResult);
+        Quad *q1       = genQuad((char*)"!=",temp,parametro,aux.NameResult);
         aux.listQuad   = addQuad(aux.listQuad,q1);
+        aux.NameResult = temp;
         aux.bool_leftValue = 0;
     }else if (token_atual.ttoken==MENOR){
+        char *temp   = genTemp();
         consome_token(MENOR);
         aux = add();
-        Quad *q1       = genQuad((char*)"<",parametro,parametro,aux.NameResult);
+        Quad *q1       = genQuad((char*)"<",temp,parametro,aux.NameResult);
         aux.listQuad   = addQuad(aux.listQuad,q1);
+        aux.NameResult = temp;
         aux.bool_leftValue = 0;
     }else if (token_atual.ttoken==MENORIGUAL){
+        char *temp   = genTemp();
         consome_token(MENORIGUAL);
         aux = add();
-        Quad *q1       = genQuad((char*)"<=",parametro,parametro,aux.NameResult);
+        Quad *q1       = genQuad((char*)"<=",temp,parametro,aux.NameResult);
         aux.listQuad   = addQuad(aux.listQuad,q1);
+        aux.NameResult = temp;
         aux.bool_leftValue = 0;
     }else if (token_atual.ttoken==MAIOR){
+        char *temp   = genTemp();
         consome_token(MAIOR);
         aux = add();
-        Quad *q1       = genQuad((char*)">",parametro,parametro,aux.NameResult);
+        Quad *q1       = genQuad((char*)">",temp,parametro,aux.NameResult);
         aux.listQuad   = addQuad(aux.listQuad,q1);
+        aux.NameResult = temp;
         aux.bool_leftValue = 0;
     }else if (token_atual.ttoken==MAIORIGUAL){
+        char *temp   = genTemp();
         consome_token(MAIORIGUAL);
         aux = add();
-        Quad *q1       = genQuad((char*)">=",parametro,parametro,aux.NameResult);
+        Quad *q1       = genQuad((char*)">=",temp,parametro,aux.NameResult);
         aux.listQuad   = addQuad(aux.listQuad,q1);
+        aux.NameResult = temp;
         aux.bool_leftValue = 0;
     }else{
         aux.bool_leftValue = 1;
+        aux.NameResult = parametro;
     }
-    aux.NameResult = parametro;
+
     return aux;
 }
 
@@ -551,8 +570,9 @@ t_valuereturns restoAdd(char* parametro){
     if (token_atual.ttoken==SOMA){
         consome_token(SOMA);
         aux  = mult();
-        aux2 = restoAdd(parametro); // WALACE
-        Quad *q1 = genQuad((char*)"+",parametro,parametro,aux.NameResult);
+        char *temp = genTemp();
+        aux2 = restoAdd(temp); // WALACE
+        Quad *q1 = genQuad((char*)"+",temp,parametro,aux.NameResult);
         aux.listQuad   = addQuad(aux.listQuad,q1);
         aux.listQuad   = addQuad(aux.listQuad,aux2.listQuad);
         aux.NameResult = aux2.NameResult;
@@ -560,8 +580,9 @@ t_valuereturns restoAdd(char* parametro){
     }else if (token_atual.ttoken==SUB){
         consome_token(SUB);
         aux  = mult();
-        aux2 = restoAdd(aux.NameResult); // WALACE
-        Quad *q1       = genQuad((char*)"-",parametro,parametro,aux.NameResult);
+        char *temp = genTemp();
+        aux2 = restoAdd(temp); // WALACE
+        Quad *q1       = genQuad((char*)"-",temp,parametro,aux.NameResult);
         aux.listQuad   = addQuad(aux.listQuad,q1);
         aux.listQuad   = addQuad(aux.listQuad,aux2.listQuad);
         aux.NameResult = aux2.NameResult;
@@ -591,25 +612,31 @@ t_valuereturns restoMult(char *parametro){
     if (token_atual.ttoken==MULT){
         consome_token(MULT);
         aux      = uno();
-        Quad *q1 = genQuad((char*)"*",parametro,parametro,aux.NameResult);
-        aux.listQuad       = addQuad(aux.listQuad,q1);
+        char* temp = genTemp();
+        Quad *q1 = genQuad((char*)"*",temp,parametro,aux.NameResult);
+        aux.listQuad     = addQuad(aux.listQuad,q1);
+        aux.NameResult   = temp;
         aux.bool_leftValue = 0;
     }else if (token_atual.ttoken==DIVI){
         consome_token(DIVI);
         aux = uno();
-        Quad *q1     = genQuad((char*)"/",parametro,parametro,aux.NameResult);
+        char* temp = genTemp();
+        Quad *q1     = genQuad((char*)"/",temp,parametro,aux.NameResult);
         aux.listQuad = addQuad(aux.listQuad,q1);
+        aux.NameResult   = temp;
         aux.bool_leftValue = 0;
     }else if (token_atual.ttoken==MOD){
         consome_token(MOD);
         aux      = uno();
-        Quad *q1 = genQuad((char*)"%",parametro,parametro,aux.NameResult);
+        char* temp = genTemp();
+        Quad *q1 = genQuad((char*)"%",temp,parametro,aux.NameResult);
         aux.listQuad = addQuad(aux.listQuad,q1);
+        aux.NameResult   = temp;
         aux.bool_leftValue = 0;
     }else{
         aux.bool_leftValue = 1;
+        aux.NameResult = parametro; // WALACE
     }
-    aux.NameResult = parametro; // WALACE
     return aux;
 }
 
@@ -660,10 +687,11 @@ t_valuereturns fator(){
           fclose(file_src);
           exit(3);
       }
-      char *temp     = genTemp();
-      Quad *q1       = genQuad((char*)"var",temp,lexema,NULL);
-      aux.listQuad   = addQuad(aux.listQuad,q1);
-      aux.NameResult = temp;
+      // char *temp     = getTemp(lexema);
+      // char *temp     = genTemp();
+      // Quad *q1       = genQuad((char*)"=",lexema,"0",NULL);
+      // aux.listQuad   = addQuad(aux.listfQuad,q1);
+      aux.NameResult = busca_variaveis(lexema);
       // return 1 se IDENT
       aux.bool_leftValue = 1;
 
@@ -757,7 +785,7 @@ char *decod_Token(TToken token){
             strcpy(aux,"FOR");
         break;
         case 26:
-            strcpy(aux,"Numero Inteiro");
+            strcpy(aux,"Uma Expressão");
         break;
         case 27:
             strcpy(aux,"Numero Float");
@@ -794,4 +822,52 @@ char *decod_Token(TToken token){
         break;
       }
       return aux;
+}
+
+void add_id(Token token, int tipo){
+    if (lenVariables == 0){
+        listVariables = malloc(sizeof(t_variable));
+        lenVariables  = 1;
+        listVariables[0].id_var = malloc(sizeof(char)*32);
+        listVariables[0].type   = tipo;
+        listVariables[0].nivel  = nivel_variaveis;
+        strcpy(listVariables[0].id_var,token.lexema);
+    }else{
+        for (int i=0; i<lenVariables;i++)
+            if (strcmp(token.lexema,listVariables[i].id_var)==0){
+                if (nivel_variaveis == listVariables[i].nivel){
+                    fprintf(stderr, "\nError de Compilação: Linha %d, Coluna %d\n\tMúltipla Declaração de Variavel,  Variavel = \'%s\'\n\n",token.linha, token.coluna, token.lexema);
+                    fclose(file_src);
+                    exit(3);
+                }
+            }
+        listVariables= realloc(listVariables,sizeof(t_variable)*(++(lenVariables)));
+        listVariables[(lenVariables)-1].id_var = malloc(sizeof(char)*32);
+        listVariables[(lenVariables)-1].type   = tipo;
+        listVariables[(lenVariables)-1].nivel  = nivel_variaveis;
+        strcpy(listVariables[(lenVariables)-1].id_var,token.lexema);
+    }
+}
+
+void deleta_variaveis(){
+    u_int8_t cont = 0;
+    while(cont<lenVariables){
+        if ((listVariables[cont].nivel == nivel_variaveis)&&(nivel_variaveis != 1)){
+            for (;cont<lenVariables-1; cont++)
+                listVariables[cont] = listVariables[cont+1];
+
+            listVariables = realloc(listVariables, sizeof(t_variable)*(--(lenVariables)));
+        }
+        cont++;
+    }
+}
+
+char* busca_variaveis(char *lexema){
+      char *var = malloc(sizeof(char)*(40));
+      for(int i=lenVariables-1;i>=0;i--)
+          if (strcmp(listVariables[i].id_var, lexema)==0){
+              sprintf(var,"_%d%s",listVariables[i].nivel, listVariables[i].id_var);
+              break;
+          }
+      return var;
 }
