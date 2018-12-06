@@ -1,33 +1,20 @@
 /*==============================
 **  Programa exemplo em miniC
 **
-**  - fatora um inteiro lido.
+** - Fibonacci
 **==============================
-
-minimize sum(1..v,1..v)(Cij*Xij)
-
-sum(1..v)(Xij) <= 1; ,(1..v) // maximo uma chegada
-
-sum(1..v)(Xoj) = 1; // garente a saida
-
-sum(1..v)(Xdj) = 1; // garante a chegada
-
 */
 
-// aumentando a linha de inicio
-
-int main(int f) {
-  float a,b,c;
-  float d;
-  a = 10;
-  b= 0;
-  while(a&&b)
-    c = 9/10;
-  for(a=0 ; a>10;a=a+1){
-      b = a;
-      break;
-      b = a+c;
+int main(){
+  int a,b,c,d,e;
+  a = 1;
+  b = 0;
+  //scan("Numero para Fib = ",c);
+  c = 10;
+  for(d=0;d<c;d=d+1){
+      e = a;
+      a = a+b;
+      b = e;
   }
-  scan("ola",a);
-  print("a = ",a,"ola");
+  print("Fib = ",b);
 }
