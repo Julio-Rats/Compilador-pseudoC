@@ -9,7 +9,7 @@ int main(){
   int a,b,c,d,e;
   float f;
   a = 1;
-  scan("\nNumero para Fib = ",c);
+  scan("Numero para Fib = ",c);
   //c = 57;
   for(d=0;d<c;d=d+1){
       e = a;

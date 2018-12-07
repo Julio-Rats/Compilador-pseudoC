@@ -76,10 +76,11 @@ Quad* copyQuad(Quad* list){
 }
 
 void exec(Quad *lista){
+    u_int8_t type, op;
+    float    valor;
+    char     str[64];
     for(Quad *aux=lista;aux;aux=aux->next){
-        u_int8_t type, op = decod_inst(aux->param1);
-        float    valor;
-        char     str[64];
+        op = decod_inst(aux->param1);
         switch (op) {
           case 0:
               type  = getType(aux->param2);
@@ -213,6 +214,10 @@ void exec(Quad *lista){
               add_var(aux->param2, valor, type);
           break;
           case 18:
+              if (getValue(aux->param4)==0){
+                  fprintf(stderr, "\nERROR TEMPO DE EXECUÇÃO: Divisão por zero impossivel\n\n");
+                  exit(12);
+              }
               valor = getValue(aux->param3)/getValue(aux->param4);
               type  = getType(aux->param2);
               add_var(aux->param2, valor, type);

@@ -1,0 +1,14 @@
+int main(){
+  float fat,n,valor;
+  scan("Qual o numero do fatorial: ", n);
+  if (n<0){
+    print("Error não existe fatorial negativo");
+    return -1;
+  }
+  valor = n;
+  for(fat=1;n>1;n=n-1){
+      fat = fat*n;
+  }
+  print("Resultado do fatorial de ",valor," é ",fat);
+  return 1;
+}

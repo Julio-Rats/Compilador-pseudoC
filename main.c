@@ -43,6 +43,6 @@ int main(int argc, char *argv[]){
 	// }
 
 	exec(aux.listQuad);
-
+	
 	return 0;
 }

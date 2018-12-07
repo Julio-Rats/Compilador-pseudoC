@@ -144,7 +144,7 @@ t_valuereturns stmt(char* jump_cont, char* jump_exit){
           consome_token(PONTVIRG);
     }else if (token_atual.ttoken==RETURN){
           consome_token(RETURN);
-          aux = fator();
+          aux = expr();
           consome_token(PONTVIRG);
           Quad *q = genQuad((char*)"CALL",(char*)"RETURN",aux.NameResult,NULL);
           aux.listQuad = addQuad(aux.listQuad, q);
