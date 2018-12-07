@@ -6,13 +6,13 @@ t_variable  *listVariables = NULL;
 
 char* genLabel(){
       static unsigned int inc = 0;
-      char   *aux   = malloc(sizeof(char)*(strlen("_label")+9));
+      char   *aux   = malloc(sizeof(char)*(strlen("_l")+7));
       sprintf(aux,"%s%d","_l",inc++);
       return aux;
 }
 char* genTemp(){
       static unsigned int inc = 0;
-      char   *aux   = malloc(sizeof(char)*(strlen("_temp")+9));
+      char   *aux   = malloc(sizeof(char)*(strlen("_t")+7));
       sprintf(aux,"%s%d","_t",inc++);
       return aux;
 }
@@ -76,8 +76,7 @@ Quad* copyQuad(Quad* list){
 }
 
 void exec(Quad *lista){
-    Quad *aux = lista;
-    while(aux){
+    for(Quad *aux=lista;aux;aux=aux->next){
         u_int8_t type, op = decod_inst(aux->param1);
         float    valor;
         char     str[64];
@@ -224,7 +223,6 @@ void exec(Quad *lista){
               add_var(aux->param2, valor, type);
           break;
         }
-        aux = aux->next;
     }
     printf("\nFinalizado: sem retorno\n");
     return;
