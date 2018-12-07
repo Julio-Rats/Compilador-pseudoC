@@ -6,15 +6,16 @@
 */
 
 int main(){
-  int a,b,c,d,e;
+  float a,b,c,d,e;
+  float f;
   a = 1;
-  b = 0;
-  //scan("Numero para Fib = ",c);
-  c = 10;
+  scan("Numero para Fib = ",c);
+  //c = 10;
   for(d=0;d<c;d=d+1){
       e = a;
       a = a+b;
       b = e;
   }
-  print("Fib = ",b);
+  print("Valor do ",c," elemento fibonacci é: ",b);
+  return 0;
 }

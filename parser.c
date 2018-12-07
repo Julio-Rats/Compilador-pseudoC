@@ -142,6 +142,12 @@ t_valuereturns stmt(char* jump_cont, char* jump_exit){
           Quad *q = genQuad((char*)"JUMP",jump_exit,NULL,NULL);
           aux.listQuad = addQuad(aux.listQuad, q);
           consome_token(PONTVIRG);
+    }else if (token_atual.ttoken==RETURN){
+          consome_token(RETURN);
+          aux = fator();
+          consome_token(PONTVIRG);
+          Quad *q = genQuad((char*)"CALL",(char*)"RETURN",aux.NameResult,NULL);
+          aux.listQuad = addQuad(aux.listQuad, q);
     }else{
           consome_token(PONTVIRG);
     }

@@ -21,7 +21,10 @@ int main(int argc, char *argv[]){
 	t_valuereturns aux = parser();
   fclose (file_src);
 
-	// if (aux.listQuad){
+
+	// DESCOMENTAR EMBAIXO PRA VER AS QUADUPLAS
+
+	// if (aux.listQuad)
 	// 	for(Quad *q=aux.listQuad;q;q=q->next){
 	// 			if (q->param1)
 	// 				printf("(%s", q->param1);
@@ -37,15 +40,9 @@ int main(int argc, char *argv[]){
 	// 				printf(", %s)\n", q->param4);
 	// 			else
 	// 				printf(")\n");
-	// 	}}else{
-	// 			printf("NOTHING\n");
-	// 	}
-
-	// for(int i=0;i<lenVariables;i++)
-	// 		printf("var = %s\n", listVariables[i].id_var);
+	// }
 
 	exec(aux.listQuad);
-
 
 	return 0;
 }

@@ -28,7 +28,7 @@ extern t_variable   *listVariables;
 
 typedef struct{
     char     *id_var;
-    double    value_numeric;
+    float     value_numeric;
     u_int8_t  type:2;
 }t_varambiente;
 

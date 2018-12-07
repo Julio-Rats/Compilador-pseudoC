@@ -30,7 +30,6 @@ Quad* addQuad(Quad* destine, Quad* source){
       if (aux){
           while(aux->next){
               aux = aux->next;
-              // printf("%p\n", aux);
           }
           if (source){
               aux->next = malloc(sizeof(Quad*));
@@ -161,22 +160,40 @@ void exec(Quad *lista){
               if (opaux == 13){
                    sprintf(str, aux->param3);
                    if (str[0] == '\"'){
-                      strcpy(str, removeaspas(str));
+                      strcpy(str, removeaspas(aux->param3));
                       strcpy(str, interpretaStr(str));
                       printf("%s", str);
                    }else if (str[0] == '_'){
-                      printf("%.2f\n", getValue(str));
+                        type = getType(str);
+                        if (type == 0)
+                            printf("%.f", getValue(str));
+                        else
+                            printf("%.2f", getValue(str));
                    }else{
-                      printf("%.2f\n", atof(str));
+                      printf("%.2f", atof(str));
                    }
-              }else{
+                   if (aux->next){
+                     if (strcmp(aux->next->param1,(char*)"CALL")==0){
+                          if (strcmp(aux->next->param2,(char*)"PRINT")!=0){
+                              printf("\n");
+                          }
+                    }else{
+                          printf("\n");
+                    }
+                  }else{
+                    printf("\n");
+                  }
+              }else if (opaux == 14){
                   sprintf(str, aux->param3);
-                  strcpy(str, removeaspas(str));
+                  strcpy(str, removeaspas(aux->param3));
                   strcpy(str, interpretaStr(str));
                   printf("%s", str);
                   scanf("%f", &valor);
                   type  = getType(aux->param4);
                   add_var(aux->param4, valor, type);
+              }else if (opaux == 20){
+                  printf("\nFinalizado: retorno %.f\n",trunc(getValue(aux->param3)));
+                  exit(0);
               }
           break;
 
@@ -252,6 +269,8 @@ int decod_inst(char *opcode){
           return 18;
     }else if (strcmp(opcode, "%")==0){
           return 19;
+    }else if (strcmp(opcode, "RETURN")==0){
+          return 20;
     }
     return -1;
 }
@@ -328,10 +347,13 @@ Quad* getLabel(Quad* list, char* lexema){
 
 char* removeaspas(char* str){
       int len = strlen(str);
-      char* aux = malloc(sizeof(char)*(len+1));
+
+      char* aux = malloc(sizeof(char)*len-1);
       for(int i=0;i<len-2;i++){
           aux[i] = str[i+1];
       }
+      aux[len-2] = '\0';
+      // printf("\naqqq %s--%d--%d\n", aux, strlen(aux),len-2);
       return aux;
 }
 
@@ -343,19 +365,18 @@ char* interpretaStr(char* str){
         if((str[i]=='\\')&&(str[i-1])!='\\'){
             switch (str[i+1]) {
               case 'n':
-                  aux[indice] = '\0';
                   sprintf(aux,"%s\n",aux);
-                  indice +=2;
-                  i += 2;
+                  indice++;
+                  i+=1;
+                  continue;
               break;
               case 't':
-                  aux[indice] = '\0';
                   sprintf(aux,"%s\t",aux);
-                  indice +=2;
-                  i += 2;
+                  indice++;
+                  i++;
+                  continue;
               break;
               default:
-                  // aux[i] = str[i+1];
                   continue;
               break;
             }
