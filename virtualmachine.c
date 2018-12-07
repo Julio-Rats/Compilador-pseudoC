@@ -5,14 +5,14 @@ t_variable  *listVariables = NULL;
 
 
 char* genLabel(){
-      static unsigned short int inc = 0;
-      char   *aux   = malloc(sizeof(char)*(strlen("_label")+6));
+      static unsigned int inc = 0;
+      char   *aux   = malloc(sizeof(char)*(strlen("_label")+9));
       sprintf(aux,"%s%d","_l",inc++);
       return aux;
 }
 char* genTemp(){
-      static unsigned short int inc = 0;
-      char   *aux   = malloc(sizeof(char)*(strlen("_temp")+6));
+      static unsigned int inc = 0;
+      char   *aux   = malloc(sizeof(char)*(strlen("_temp")+9));
       sprintf(aux,"%s%d","_t",inc++);
       return aux;
 }
@@ -45,22 +45,22 @@ Quad* copyQuad(Quad* list){
     aux2 = list;
     aux3 = aux;
     while(aux2){
-        aux3->param1 = malloc(sizeof(char)*5);
+        aux3->param1 = malloc(sizeof(char)*6);
         strcpy(aux3->param1, aux2->param1);
         if (aux2->param2){
-          aux3->param2 = malloc(sizeof(char)*34);
+          aux3->param2 = malloc(sizeof(char)*6);
           strcpy(aux3->param2, aux2->param2);
         }else{
           aux3->param2 = NULL;
         }
         if (aux2->param3){
-          aux3->param3 = malloc(sizeof(char)*34);
+          aux3->param3 = malloc(sizeof(char)*64);
           strcpy(aux3->param3, aux2->param3);
         }else{
           aux3->param3 = NULL;
         }
         if (aux2->param4){
-          aux3->param4 = malloc(sizeof(char)*34);
+          aux3->param4 = malloc(sizeof(char)*64);
           strcpy(aux3->param4, aux2->param4);
         }else{
           aux3->param4 = NULL;
@@ -78,10 +78,9 @@ Quad* copyQuad(Quad* list){
 void exec(Quad *lista){
     Quad *aux = lista;
     while(aux){
-        int    opaux, type;
-        int    op = decod_inst(aux->param1);
-        float valor;
-        char   str[64];
+        u_int8_t type, op = decod_inst(aux->param1);
+        float    valor;
+        char     str[64];
         switch (op) {
           case 0:
               type  = getType(aux->param2);
@@ -156,19 +155,19 @@ void exec(Quad *lista){
           break;
 
           case 12:
-              opaux = decod_inst(aux->param2);
-              if (opaux == 13){
-                   sprintf(str, aux->param3);
+              type = decod_inst(aux->param2);
+              sprintf(str, aux->param3);
+              if (type == 13){
                    if (str[0] == '\"'){
                       strcpy(str, removeaspas(aux->param3));
                       strcpy(str, interpretaStr(str));
                       printf("%s", str);
                    }else if (str[0] == '_'){
-                        type = getType(str);
+                        type = getType(aux->param3);
                         if (type == 0)
-                            printf("%.f", getValue(str));
+                            printf("%.f",  getValue(aux->param3));
                         else
-                            printf("%.2f", getValue(str));
+                            printf("%.2f", getValue(aux->param3));
                    }else{
                       printf("%.2f", atof(str));
                    }
@@ -181,9 +180,9 @@ void exec(Quad *lista){
                           printf("\n");
                     }
                   }else{
-                    printf("\n");
+                      printf("\n");
                   }
-              }else if (opaux == 14){
+              }else if (type == 14){
                   sprintf(str, aux->param3);
                   strcpy(str, removeaspas(aux->param3));
                   strcpy(str, interpretaStr(str));
@@ -191,10 +190,11 @@ void exec(Quad *lista){
                   scanf("%f", &valor);
                   type  = getType(aux->param4);
                   add_var(aux->param4, valor, type);
-              }else if (opaux == 20){
+              }else if (type == 20){
                   printf("\nFinalizado: retorno %.f\n",trunc(getValue(aux->param3)));
                   exit(0);
               }
+              fflush(stdout);
           break;
 
           case 15:
@@ -226,6 +226,8 @@ void exec(Quad *lista){
         }
         aux = aux->next;
     }
+    printf("\nFinalizado: sem retorno\n");
+    return;
 }
 
 int decod_inst(char *opcode){
@@ -314,10 +316,11 @@ void add_var(char *id, float value,  int type){
 }
 
 int getType(char *lexema){
-    char *aux = malloc (sizeof(char)*40);
+    char *aux = malloc (sizeof(char)*64);
     for(int i=0;i<lenVariables;i++){
         sprintf(aux,"_%d%s",listVariables[i].nivel, listVariables[i].id_var);
         if (strcmp(lexema, aux)==0){
+          free(aux);
           return listVariables[i].type;
         }
     }
@@ -347,7 +350,6 @@ Quad* getLabel(Quad* list, char* lexema){
 
 char* removeaspas(char* str){
       int len = strlen(str);
-
       char* aux = malloc(sizeof(char)*len-1);
       for(int i=0;i<len-2;i++){
           aux[i] = str[i+1];
@@ -362,27 +364,30 @@ char* interpretaStr(char* str){
       char* aux = malloc(sizeof(char)*len);
       unsigned int indice = 0;
       for(int i=0;i<len;i++){
-        if((str[i]=='\\')&&(str[i-1])!='\\'){
+        if((str[i]=='\\')){
             switch (str[i+1]) {
               case 'n':
+                  aux[indice] = '\0';
                   sprintf(aux,"%s\n",aux);
                   indice++;
                   i+=1;
                   continue;
               break;
               case 't':
+                  aux[indice] = '\0';
                   sprintf(aux,"%s\t",aux);
                   indice++;
                   i++;
                   continue;
               break;
               default:
+                  aux[indice++] = str[i];
                   continue;
               break;
             }
         }
         aux[indice++] = str[i];
-      }
+     }
     aux[indice] = '\0';
     return aux;
 }

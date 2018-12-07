@@ -14,12 +14,12 @@
 */
 
 typedef enum{
-		ABRIPAR  = 1  , FECHAPAR  , VIRG    , PONTVIRG , FOE        , ERROR      ,
-		IDENT    = 7  , STR       , SOMA    , SUB      , DIVI       , ATRIB      ,
-		MULT     = 13 , IGUAL     , MOD     , PRINT    , SCAN       , AND	       ,
-		ABRICHAV = 19 , FECHACHAV , INT     , FLOAT    , BREAK      , CONTINUE   ,
+		ABRIPAR  = 1  , FECHAPAR  , VIRG     , PONTVIRG , FOE        , ERROR      ,
+		IDENT    = 7  , STR       , SOMA     , SUB      , DIVI       , ATRIB      ,
+		MULT     = 13 , IGUAL     , MOD      , PRINT    , SCAN       , AND	      ,
+		ABRICHAV = 19 , FECHACHAV , INT      , FLOAT    , BREAK      , CONTINUE   ,
 		FOR      = 25 , NUMint    , NUMfloat , WHILE    , IF         , ELSE       ,
-		OR       = 31 , NOT       , MENOR   , MAIOR    , MENORIGUAL , MAIORIGUAL ,
+		OR       = 31 , NOT       , MENOR    , MAIOR    , MENORIGUAL , MAIORIGUAL ,
 		NIGUAL   = 37 , RETURN    ,
 }TToken;
 
@@ -38,7 +38,7 @@ typedef enum{
 typedef struct{
 		unsigned short int linha;
 		unsigned short int coluna;
-		char lexema[32];
+		char lexema[64];
 		TToken ttoken;
 }Token;
 

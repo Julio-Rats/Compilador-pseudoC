@@ -1,18 +1,18 @@
 all: compilador clear
 
 compilador: main
-			gcc  -o compilador *.o -lm
+			gcc -O3 -o compilador *.o -lm
 
 clear:
 			rm *.h.gch *.o
 main: lexico
-			gcc -c  main.c
+			gcc -c -O3 main.c
 lexico: parser
-			gcc -c  lexico.h
-			gcc -c  lexico.c
+			gcc -c -O3 lexico.h
+			gcc -c -O3 lexico.c
 parser: virtualmachine
-			gcc -c  parser.h
-			gcc -c  parser.c
+			gcc -c -O3 parser.h
+			gcc -c -O3 parser.c
 virtualmachine:
-			gcc -c  virtualmachine.h
-			gcc -c  virtualmachine.c
+			gcc -c -O3 virtualmachine.h
+			gcc -c -O3 virtualmachine.c

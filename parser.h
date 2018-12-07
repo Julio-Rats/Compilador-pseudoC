@@ -8,9 +8,9 @@
 #include "virtualmachine.h"
 
 typedef struct{
-      unsigned short int  bool_leftValue:1;
-      Quad                *listQuad;
-      char                *NameResult;
+      u_int8_t  bool_leftValue:1;
+      Quad     *listQuad;
+      char     *NameResult;
 }t_valuereturns;
 
 // Variavel que controla o analisador lexico, com o lexema e Tipo de Token atual.
