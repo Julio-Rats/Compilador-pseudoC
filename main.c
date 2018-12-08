@@ -43,6 +43,12 @@ int main(int argc, char *argv[]){
 	// }
 
 	exec(aux.listQuad);
-	
+
+	// for (size_t i = 0; i < lenVarambiente; i++) {
+	// 	printf("%s == %d\n", listVarambiente[i].id_var, listVarambiente[i].type);
+	// }
+	// for (size_t i = 0; i < lenVariables; i++) {
+	// 	printf("%s == %d\n", listVariables[i].id_var, listVariables[i].type);
+	// }
 	return 0;
 }

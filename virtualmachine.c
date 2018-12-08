@@ -83,6 +83,13 @@ void exec(Quad *lista){
         op = decod_inst(aux->param1);
         switch (op) {
           case 0:
+              if (strcmp(aux->param3, (char*)"V")==0){
+                  valor = getValue(aux->param2);
+                  if (valor == 0){
+                     add_var(aux->param2, 0, atoi(aux->param4));
+                   }
+                   continue;
+              }
               type  = getType(aux->param2);
               valor = getValue(aux->param3);
               add_var(aux->param2, valor, type);
@@ -192,7 +199,7 @@ void exec(Quad *lista){
                   add_var(aux->param4, valor, type);
               }else if (type == 20){
                   printf("\nFinalizado: retorno %.f\n",trunc(getValue(aux->param3)));
-                  exit(0);
+                  return;
               }
               fflush(stdout);
           break;
@@ -319,15 +326,11 @@ void add_var(char *id, float value,  int type){
 }
 
 int getType(char *lexema){
-    char *aux = malloc (sizeof(char)*64);
-    for(int i=0;i<lenVariables;i++){
-        sprintf(aux,"_%d%s",listVariables[i].nivel, listVariables[i].id_var);
-        if (strcmp(lexema, aux)==0){
-          free(aux);
-          return listVariables[i].type;
+    for(int i=0;i<lenVarambiente;i++){
+        if (strcmp(lexema, listVarambiente[i].id_var)==0){
+          return listVarambiente[i].type;
         }
     }
-    free(aux);
     return 1;
 }
 
@@ -358,7 +361,6 @@ char* removeaspas(char* str){
           aux[i] = str[i+1];
       }
       aux[len-2] = '\0';
-      // printf("\naqqq %s--%d--%d\n", aux, strlen(aux),len-2);
       return aux;
 }
 

@@ -3,7 +3,7 @@
 char* consome_token(TToken consome){
     //  Validação do Token, processo do Lexima
     if (consome == token_atual.ttoken){
-        char *lexema = malloc(sizeof(char)*32);
+        char *lexema = malloc(sizeof(char)*64);
         strcpy(lexema, token_atual.lexema);
         token_atual = getToken();
         return lexema;
@@ -86,7 +86,7 @@ t_valuereturns bloco(char* jump_cont, char* jump_exit){
 t_valuereturns stmtList(char* jump_cont, char* jump_exit){
     t_valuereturns aux, aux2;
     aux.listQuad = NULL;
-    if (    (token_atual.ttoken == FOR)   ||(token_atual.ttoken==PRINT)   ||(token_atual.ttoken==SCAN)
+    if (    (token_atual.ttoken==FOR)   ||(token_atual.ttoken==PRINT)   ||(token_atual.ttoken==SCAN)
           ||(token_atual.ttoken==WHILE)   ||(token_atual.ttoken==NOT)     ||(token_atual.ttoken==ABRIPAR)
           ||(token_atual.ttoken==SOMA)    ||(token_atual.ttoken==SUB)     ||(token_atual.ttoken==IDENT)
           ||(token_atual.ttoken==NUMint)  ||(token_atual.ttoken==NUMfloat)||(token_atual.ttoken==IF)
@@ -119,7 +119,7 @@ t_valuereturns stmt(char* jump_cont, char* jump_exit){
           aux = expr();
           consome_token(PONTVIRG);
     }else if (token_atual.ttoken==IF){
-          aux = ifStmt();
+          aux = ifStmt(jump_cont, jump_exit);
     }else if (token_atual.ttoken==ABRICHAV){
           aux = bloco(jump_cont, jump_exit);
     }else if (token_atual.ttoken==CONTINUE){
@@ -170,7 +170,11 @@ t_valuereturns identList(int vartype){
     char* lexema = consome_token(IDENT);
     add_id(atual, vartype);
     aux = restoIdentList(vartype);
-    Quad *q1     = genQuad((char*)"=",busca_variaveis(lexema),(char*)"0",NULL);
+    Quad *q1;
+    if (vartype == 0)
+        q1 = genQuad((char*)"=",busca_variaveis(lexema),(char*)"V",(char*)"0");
+    else
+        q1 = genQuad((char*)"=",busca_variaveis(lexema),(char*)"V",(char*)"1");
     aux.listQuad = addQuad(aux.listQuad, q1);
     return aux;
 
@@ -185,7 +189,11 @@ t_valuereturns restoIdentList(int vartype){
         char* lexema = consome_token(IDENT);
         add_id(token, vartype);
         aux = restoIdentList(vartype);
-        Quad *q1     = genQuad((char*)"=",busca_variaveis(lexema),"0",NULL);
+        Quad *q1;
+        if (vartype == 0)
+            q1 = genQuad((char*)"=",busca_variaveis(lexema),(char*)"V",(char*)"0");
+        else
+            q1 = genQuad((char*)"=",busca_variaveis(lexema),(char*)"V",(char*)"1");
         aux.listQuad = addQuad(aux.listQuad, q1);
     }
     return aux;
@@ -343,7 +351,7 @@ t_valuereturns whileStmt(){
     return aux;
 }
 
-t_valuereturns ifStmt(){
+t_valuereturns ifStmt(char* jump_cont, char* jump_exit){
     t_valuereturns aux, aux2, aux3;
     consome_token(IF);
     consome_token(ABRIPAR);
@@ -355,9 +363,9 @@ t_valuereturns ifStmt(){
     consome_token(FECHAPAR);
     Quad *q2     = genQuad((char*)"LABEL",labTrue,NULL,NULL);
     aux.listQuad = addQuad(aux.listQuad, q2);
-    aux2 = stmt(NULL, NULL);
+    aux2 = stmt(jump_cont, jump_exit);
     aux.listQuad = addQuad(aux.listQuad, aux2.listQuad);
-    aux3 = elsePart();
+    aux3 = elsePart(jump_cont, jump_exit);
     Quad *q4 = genQuad((char*)"LABEL",labFalse,NULL,NULL);
     if (aux3.listQuad){
         char *labExit  = genLabel();
@@ -375,12 +383,12 @@ t_valuereturns ifStmt(){
     return aux;
 }
 
-t_valuereturns elsePart(){
+t_valuereturns elsePart(char* jump_cont, char* jump_exit){
     t_valuereturns aux;
     aux.listQuad = NULL;
     if (token_atual.ttoken==ELSE){
         consome_token(ELSE);
-        aux = stmt(NULL, NULL);
+        aux = stmt(jump_cont, jump_exit);
     }
     return aux;
 }
@@ -606,7 +614,6 @@ t_valuereturns restoAdd(char* parametro){
 t_valuereturns mult(){
     t_valuereturns aux, aux2;
     aux  = uno();
-    // printf("%s\n", aux.NameResult);
     aux2 = restoMult(aux.NameResult);
     aux.listQuad   = addQuad(aux.listQuad,aux2.listQuad);
     aux.NameResult = aux2.NameResult;
@@ -617,7 +624,6 @@ t_valuereturns mult(){
 t_valuereturns restoMult(char *parametro){
     t_valuereturns aux;
     aux.listQuad = NULL;
-    // aux.bool_leftValue = 0;
     if (token_atual.ttoken==MULT){
         consome_token(MULT);
         aux = uno();
