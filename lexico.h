@@ -36,16 +36,17 @@ typedef enum{
 }MachineState;
 
 typedef struct{
-		unsigned short int linha;
-		unsigned short int coluna;
-		char lexema[64];
-		TToken ttoken;
+		u_int16_t linha;
+		u_int16_t coluna;
+		u_int8_t  lexema[256];
+		TToken    ttoken;
 }Token;
 
 FILE *file_src;
 
 // 		Função que le um tokem valido ou erro, retorna como estrutura Token
 //			tendo a string e o tipo (Token) dela.
+
 Token getToken();
 
 #endif // #ifndef LEXICO

@@ -9,43 +9,43 @@
 typedef struct quad_t Quad;
 
 struct quad_t{
-      char *param1;
-      char *param2;
-      char *param3;
-      char *param4;
-      Quad *next;
+      u_int8_t *param1;
+      u_int8_t *param2;
+      u_int8_t *param3;
+      u_int8_t *param4;
+      Quad     *next;
 };
 
 typedef struct{
-    char      *id_var;
+    u_int8_t   *id_var;
     u_int8_t   nivel;
     u_int8_t   type:1;
 }t_variable;
 
-extern unsigned int  lenVariables;
-extern t_variable   *listVariables;
+extern u_int32_t   lenVariables;
+extern t_variable *listVariables;
 
 typedef struct{
-    char     *id_var;
-    float     value_numeric;
+    u_int8_t  *id_var;
+    float      value_numeric;
     u_int8_t  type:1;
 }t_varambiente;
 
-unsigned int   lenVarambiente;
+u_int32_t     lenVarambiente;
 t_varambiente *listVarambiente;
 
-char* genLabel();
-char* genTemp ();
-Quad* genQuad (char *param1, char *param2, char *param3, char *param4);
-Quad* addQuad (Quad *destine, Quad *Source);
+void  add_var(u_int8_t *id, float value,  u_int8_t type);
+float  getValue(u_int8_t *lexema);
 Quad* copyQuad(Quad* list);
-Quad* getLabel(Quad* list, char* lexema);
-int   decod_inst(char *opcode);
-int   getType (char *lexema);
-float getValue(char *lexema);
-char* removeaspas  (char* str);
-char* interpretaStr(char* str);
-void  add_var(char *id, float value,  int type);
+Quad* addQuad (Quad *destine,  Quad *Source);
+Quad* getLabel(Quad* list, u_int8_t* lexema);
+Quad* genQuad (u_int8_t *param1, u_int8_t *param2, u_int8_t *param3, u_int8_t *param4);
+u_int8_t* genLabel();
+u_int8_t* genTemp ();
+u_int8_t* removeaspas  (u_int8_t* str);
+u_int8_t* interpretaStr(u_int8_t* str);
+u_int8_t    getType    (u_int8_t *lexema);
+int8_t    decod_inst (u_int8_t *opcode);
 
 void exec();
 

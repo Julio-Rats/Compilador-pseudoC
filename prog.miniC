@@ -6,6 +6,7 @@
 */
 
 int main(){
+
   int i,a,b,c,d,e;
   scan("Numero do termo Fibonacci: ", d);
   if (d<=0){
@@ -19,5 +20,5 @@ int main(){
       e = a;
   }
   print("\nO termo ",d," Fibonacci é = ",a);
-  return 0;
+  return -1;
 }

@@ -10,5 +10,6 @@ int main(){
       fat = fat*n;
   }
   print("\nResultado do fatorial de ",valor," é ",fat);
+  
   return 0;
 }

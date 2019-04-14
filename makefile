@@ -4,7 +4,7 @@ compilador: main
 			gcc -O3 -o compilador *.o -lm
 
 clear:
-			rm *.h.gch *.o
+			rm *.o *.h.gch
 main: lexico
 			gcc -c -O3 main.c
 lexico: parser

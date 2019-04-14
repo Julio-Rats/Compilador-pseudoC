@@ -11,14 +11,14 @@
 
 Token getToken(){
 
-	Token		STC_Token;	           	// ED de retorno do analisador léxico.
-	char		char_atual;	           	// Caracter lido armazenado aq.
-	char		str_atual[64]  = "";  	// String de retorno como lexema (VAR,NUM,STR).
-	MachineState    			 state_machine    = 1;  // Estado de Maquina da autômato.
-	short          int     flag_coment			 = 0;  // Verifica fim de comentario.
-	unsigned short int	   str_length  			= 0;  // Comprimento atual da str_atual.
-	static unsigned short int  coluna  			= 1;  // Coluna do arquivo TXT.
-	static unsigned short int  linha 	 			= 1;  // Linha do aquivo TXT.
+  Token            STC_Token;	          // ED de retorno do analisador léxico.
+  u_int8_t         flag_coment    = 0;  // Verifica fim de comentario.
+  u_int8_t         char_atual;	         // Caracter lido armazenado aq.
+  u_int8_t         str_atual[256] = ""; // String de retorno como lexema (VAR,NUM,STR).
+  u_int8_t         str_length     = 0;  // Comprimento atual da str_atual.
+  MachineState     state_machine  = 1;  // Estado de Maquina da autômato.
+  static u_int32_t coluna  		    = 1;   // Coluna do arquivo TXT.
+  static u_int32_t linha 	 		    = 1;   // Linha do aquivo TXT.
 
 	while (1){   // WHILE TRUE machine state
 		char_atual = fgetc(file_src);

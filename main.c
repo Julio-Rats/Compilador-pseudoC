@@ -20,35 +20,8 @@ int main(int argc, char *argv[]){
 
 	t_valuereturns aux = parser();
   fclose (file_src);
-
-
-	// DESCOMENTAR EMBAIXO PRA VER AS QUADUPLAS
-
-	// if (aux.listQuad)
-	// 	for(Quad *q=aux.listQuad;q;q=q->next){
-	// 			if (q->param1)
-	// 				printf("(%s", q->param1);
-	// 			if (q->param2)
-	// 				printf(", %s", q->param2);
-	// 			if (q->param3)
-	// 				printf(", %s", q->param3);
-	// 			else{
-	// 				printf(")\n");
-	// 				continue;
-	// 				}
-	// 			if (q->param4)
-	// 				printf(", %s)\n", q->param4);
-	// 			else
-	// 				printf(")\n");
-	// }
-
+	
 	exec(aux.listQuad);
 
-	// for (size_t i = 0; i < lenVarambiente; i++) {
-	// 	printf("%s == %d\n", listVarambiente[i].id_var, listVarambiente[i].type);
-	// }
-	// for (size_t i = 0; i < lenVariables; i++) {
-	// 	printf("%s == %d\n", listVariables[i].id_var, listVariables[i].type);
-	// }
 	return 0;
 }

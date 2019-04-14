@@ -1,22 +1,22 @@
 #include "virtualmachine.h"
 
-unsigned int lenVariables  = 0;
+u_int32_t    lenVariables  = 0;
 t_variable  *listVariables = NULL;
 
 
-char* genLabel(){
-      static unsigned int inc = 0;
-      char   *aux   = malloc(sizeof(char)*(strlen("_l")+7));
+u_int8_t* genLabel(){
+      static u_int8_t inc = 0;
+      u_int8_t   *aux   = malloc(sizeof(u_int8_t)*(strlen("_l")+7));
       sprintf(aux,"%s%d","_l",inc++);
       return aux;
 }
-char* genTemp(){
-      static unsigned int inc = 0;
-      char   *aux   = malloc(sizeof(char)*(strlen("_t")+7));
+u_int8_t* genTemp(){
+      static u_int8_t inc = 0;
+      u_int8_t   *aux   = malloc(sizeof(u_int8_t)*(strlen("_t")+7));
       sprintf(aux,"%s%d","_t",inc++);
       return aux;
 }
-Quad* genQuad(char*param1,char*param2,char*param3,char*param4){
+Quad* genQuad(u_int8_t*param1,u_int8_t*param2,u_int8_t*param3,u_int8_t*param4){
       Quad *aux   = (Quad*) malloc(sizeof(Quad));
       aux->param1 = param1;
       aux->param2 = param2;
@@ -45,22 +45,22 @@ Quad* copyQuad(Quad* list){
     aux2 = list;
     aux3 = aux;
     while(aux2){
-        aux3->param1 = malloc(sizeof(char)*6);
+        aux3->param1 = malloc(sizeof(u_int8_t)*6);
         strcpy(aux3->param1, aux2->param1);
         if (aux2->param2){
-          aux3->param2 = malloc(sizeof(char)*6);
+          aux3->param2 = malloc(sizeof(u_int8_t)*6);
           strcpy(aux3->param2, aux2->param2);
         }else{
           aux3->param2 = NULL;
         }
         if (aux2->param3){
-          aux3->param3 = malloc(sizeof(char)*64);
+          aux3->param3 = malloc(sizeof(u_int8_t)*256);
           strcpy(aux3->param3, aux2->param3);
         }else{
           aux3->param3 = NULL;
         }
         if (aux2->param4){
-          aux3->param4 = malloc(sizeof(char)*64);
+          aux3->param4 = malloc(sizeof(u_int8_t)*256);
           strcpy(aux3->param4, aux2->param4);
         }else{
           aux3->param4 = NULL;
@@ -78,12 +78,12 @@ Quad* copyQuad(Quad* list){
 void exec(Quad *lista){
     u_int8_t type, op;
     float    valor;
-    char     str[64];
+    u_int8_t     str[256];
     for(Quad *aux=lista;aux;aux=aux->next){
         op = decod_inst(aux->param1);
         switch (op) {
           case 0:
-              if (strcmp(aux->param3, (char*)"V")==0){
+              if (strcmp(aux->param3, (u_int8_t*)"V")==0){
                   valor = getValue(aux->param2);
                   if (valor == 0){
                      add_var(aux->param2, 0, atoi(aux->param4));
@@ -179,8 +179,8 @@ void exec(Quad *lista){
                       printf("%.2f", atof(str));
                    }
                    if (aux->next){
-                     if (strcmp(aux->next->param1,(char*)"CALL")==0){
-                          if (strcmp(aux->next->param2,(char*)"PRINT")!=0){
+                     if (strcmp(aux->next->param1,(u_int8_t*)"CALL")==0){
+                          if (strcmp(aux->next->param2,(u_int8_t*)"PRINT")!=0){
                               printf("\n");
                           }
                     }else{
@@ -230,7 +230,7 @@ void exec(Quad *lista){
               add_var(aux->param2, valor, type);
           break;
           case 19:
-              valor = (int)getValue(aux->param3) % (int)getValue(aux->param4);
+              valor = (u_int8_t)getValue(aux->param3) % (u_int8_t)getValue(aux->param4);
               type  = getType(aux->param2);
               add_var(aux->param2, valor, type);
           break;
@@ -240,7 +240,7 @@ void exec(Quad *lista){
     return;
 }
 
-int decod_inst(char *opcode){
+int8_t decod_inst(u_int8_t *opcode){
     if (strcmp(opcode, "=")==0){
           return 0;
     }else if (strcmp(opcode, "==")==0){
@@ -287,7 +287,7 @@ int decod_inst(char *opcode){
     return -1;
 }
 
-void add_var(char *id, float value,  int type){
+void add_var(u_int8_t *id, float value,  u_int8_t type){
     if (lenVarambiente == 0){
         listVarambiente = malloc(sizeof(t_varambiente));
         lenVarambiente  = 1;
@@ -301,7 +301,7 @@ void add_var(char *id, float value,  int type){
         }
         return;
     }
-    for(int i=0;i<lenVarambiente;i++)
+    for(u_int8_t i=0;i<lenVarambiente;i++)
         if (strcmp(listVarambiente[i].id_var, id)==0){
           if (type == 0){
               listVarambiente[i].value_numeric = trunc(value);
@@ -325,8 +325,8 @@ void add_var(char *id, float value,  int type){
 
 }
 
-int getType(char *lexema){
-    for(int i=0;i<lenVarambiente;i++){
+u_int8_t getType(u_int8_t *lexema){
+    for(u_int8_t i=0;i<lenVarambiente;i++){
         if (strcmp(lexema, listVarambiente[i].id_var)==0){
           return listVarambiente[i].type;
         }
@@ -334,8 +334,8 @@ int getType(char *lexema){
     return 1;
 }
 
-float getValue(char *lexema){
-    for(int i=0;i<lenVarambiente;i++){
+float getValue(u_int8_t *lexema){
+    for(u_int32_t i=0;i<lenVarambiente;i++){
         if (strcmp(lexema, listVarambiente[i].id_var)==0){
             return listVarambiente[i].value_numeric;
         }
@@ -343,10 +343,10 @@ float getValue(char *lexema){
     return atof(lexema);
 }
 
-Quad* getLabel(Quad* list, char* lexema){
+Quad* getLabel(Quad* list, u_int8_t* lexema){
     Quad *aux = list;
     while(aux){
-      if (strcmp((char*)"LABEL", aux->param1)==0)
+      if (strcmp((u_int8_t*)"LABEL", aux->param1)==0)
          if (strcmp(lexema, aux->param2)==0)
             return aux;
       aux = aux->next;
@@ -354,21 +354,21 @@ Quad* getLabel(Quad* list, char* lexema){
     return NULL;
 }
 
-char* removeaspas(char* str){
-      int len = strlen(str);
-      char* aux = malloc(sizeof(char)*len-1);
-      for(int i=0;i<len-2;i++){
+u_int8_t* removeaspas(u_int8_t* str){
+      u_int8_t len = strlen(str);
+      u_int8_t* aux = malloc(sizeof(u_int8_t)*len-1);
+      for(u_int8_t i=0;i<len-2;i++){
           aux[i] = str[i+1];
       }
       aux[len-2] = '\0';
       return aux;
 }
 
-char* interpretaStr(char* str){
-      int len   = strlen(str);
-      char* aux = malloc(sizeof(char)*len);
-      unsigned int indice = 0;
-      for(int i=0;i<len;i++){
+u_int8_t* interpretaStr(u_int8_t* str){
+      u_int8_t len   = strlen(str);
+      u_int8_t* aux = malloc(sizeof(u_int8_t)*len);
+       u_int8_t indice = 0;
+      for(u_int8_t i=0;i<len;i++){
         if((str[i]=='\\')){
             switch (str[i+1]) {
               case 'n':
