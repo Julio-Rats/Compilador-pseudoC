@@ -27,14 +27,14 @@ extern t_variable *listVariables;
 
 typedef struct{
     u_int8_t  *id_var;
-    float      value_numeric;
+    double    value_numeric;
     u_int8_t  type:1;
 }t_varambiente;
 
 u_int32_t     lenVarambiente;
 t_varambiente *listVarambiente;
 
-void  add_var(u_int8_t *id, float value,  u_int8_t type);
+void  add_var(u_int8_t *id, double value,  u_int8_t type);
 float  getValue(u_int8_t *lexema);
 Quad* copyQuad(Quad* list);
 Quad* addQuad (Quad *destine,  Quad *Source);

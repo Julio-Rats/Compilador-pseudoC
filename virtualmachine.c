@@ -287,7 +287,7 @@ int8_t decod_inst(u_int8_t *opcode){
     return -1;
 }
 
-void add_var(u_int8_t *id, float value,  u_int8_t type){
+void add_var(u_int8_t *id, double value,  u_int8_t type){
     if (lenVarambiente == 0){
         listVarambiente = malloc(sizeof(t_varambiente));
         lenVarambiente  = 1;
