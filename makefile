@@ -1,18 +1,25 @@
-all: compilador clear
+CC=gcc
+CFLAGS=-O3 -W -Wall
+TARGET=interpretador
+HDR=$(wildcard *.h)
+SRC=$(wildcard *.c)
+OBJ=$(SRC:.c=.o)
+HDRC=$(HDR:.h=.h.gch)
 
-compilador: main
-			gcc -O3 -o compilador *.o -lm
+all: $(TARGET) clean
+# regras para gerar o executavel
+$(TARGET) : .h .c
+	$(CC) -o $@ $(OBJ) $(CFLAGS)
+
+# regras de compilação
+.c:
+	$(CC) -c $(SRC) $(CFLAGS)
+
+.h:
+	$(CC) -c $(HDR) $(CFLAGS)
+
+clean:
+	rm -rf $(OBJ) $(HDRC)
 
 clear:
-			rm *.o *.h.gch
-main: lexico
-			gcc -c -O3 main.c
-lexico: parser
-			gcc -c -O3 lexico.h
-			gcc -c -O3 lexico.c
-parser: virtualmachine
-			gcc -c -O3 parser.h
-			gcc -c -O3 parser.c
-virtualmachine:
-			gcc -c -O3 virtualmachine.h
-			gcc -c -O3 virtualmachine.c
+	rm -rf $(TARGET)

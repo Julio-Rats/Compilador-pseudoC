@@ -157,7 +157,7 @@ t_valuereturns stmt(u_int8_t* jump_cont, u_int8_t* jump_exit){
 t_valuereturns declaration(){
     t_valuereturns aux;
     u_int32_t vartype     = type();
-    u_int32_t numvarantes = ((lenVariables-1)>=0) ? lenVariables : 0;
+    // u_int32_t numvarantes = ((lenVariables-1)>=0) ? lenVariables : 0;
     aux = identList(vartype);
     consome_token(PONTVIRG);
     return aux;
@@ -875,7 +875,7 @@ void deleta_variaveis(){
 
 u_int8_t* busca_variaveis(u_int8_t *lexema){
       u_int8_t *var = malloc(sizeof(u_int8_t)*(256));
-      for(u_int32_t i=lenVariables-1;i>=0;i--)
+      for(int32_t i=lenVariables-1;i>=0;i--)
           if (strcmp(listVariables[i].id_var, lexema)==0){
               sprintf(var,"_%d%s",listVariables[i].nivel, listVariables[i].id_var);
               return var;

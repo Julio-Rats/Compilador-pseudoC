@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "parser.h"
-#include "virtualmachine.h"
 
 int main(int argc, char *argv[]){
 	if (argc < 2){
@@ -20,7 +19,7 @@ int main(int argc, char *argv[]){
 
 	t_valuereturns aux = parser();
   fclose (file_src);
-	
+
 	exec(aux.listQuad);
 
 	return 0;
