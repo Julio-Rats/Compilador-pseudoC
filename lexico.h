@@ -1,9 +1,11 @@
 #ifndef  _LEXICO_
-#define  _LEXICO_
+#define   _LEXICO_
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#define   STR_LEN  256
 
 /*
 		Enum que contem todos os tipos de TOKEN da linguagem, serve para a validação
@@ -18,7 +20,7 @@ typedef enum{
 		IDENT    = 7  , STR       , SOMA     , SUB      , DIVI       , ATRIB      ,
 		MULT     = 13 , IGUAL     , MOD      , PRINT    , SCAN       , AND	      ,
 		ABRICHAV = 19 , FECHACHAV , INT      , FLOAT    , BREAK      , CONTINUE   ,
-		FOR      = 25 , NUMint    , NUMfloat , WHILE    , IF         , ELSE       ,
+		FOR      = 25 , NUMINT    , NUMFLOAT , WHILE    , IF         , ELSE       ,
 		OR       = 31 , NOT       , MENOR    , MAIOR    , MENORIGUAL , MAIORIGUAL ,
 		NIGUAL   = 37 , RETURN    ,
 }TToken;
@@ -36,10 +38,10 @@ typedef enum{
 }MachineState;
 
 typedef struct{
-		u_int16_t linha;
-		u_int16_t coluna;
-		u_int8_t  lexema[256];
 		TToken    ttoken;
+		char      lexema[STR_LEN];
+		u_int32_t linha;
+		u_int32_t coluna;
 }Token;
 
 FILE *file_src;

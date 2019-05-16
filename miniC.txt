@@ -39,7 +39,7 @@
 <ioStmt> -> 'scan' '(' 'STR' ',' 'IDENT' ')' ';'
           | 'print' '(' <outList> ')' ';' ;
 <outList> -> <out> <restoOutList> ;
-<out> -> 'STR' | 'IDENT' | 'NUMint' | 'NUMfloat' ;
+<out> -> 'STR' | 'IDENT' | 'NUMINT' | 'NUMFLOAT' ;
 <restoOutList> -> ',' <out> <restoOutList> | & ;
 
 # comando while
@@ -73,7 +73,7 @@
             |  '/' <uno> <restoMult>
             |  '%' <uno> <restoMult> | & ;
 <uno> -> '+' <uno> | '-' <uno> | <fator> ;
-<fator> -> 'NUMint' | 'NUMfloat'
+<fator> -> 'NUMINT' | 'NUMFLOAT'
          | 'IDENT'  | '(' <atrib> ')' ;
 
 

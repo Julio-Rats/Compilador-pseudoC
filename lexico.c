@@ -12,13 +12,13 @@
 Token getToken(){
 
   Token            STC_Token;	          // ED de retorno do analisador léxico.
-  u_int8_t         flag_coment    = 0;  // Verifica fim de comentario.
-  u_int8_t         char_atual;	         // Caracter lido armazenado aq.
-  u_int8_t         str_atual[256] = ""; // String de retorno como lexema (VAR,NUM,STR).
+  char             char_atual;	        // Caracter lido armazenado aq.
+  u_int8_t         flag_coment     = 0;  // Verifica fim de comentario.
   u_int8_t         str_length     = 0;  // Comprimento atual da str_atual.
   MachineState     state_machine  = 1;  // Estado de Maquina da autômato.
-  static u_int32_t coluna  		    = 1;   // Coluna do arquivo TXT.
-  static u_int32_t linha 	 		    = 1;   // Linha do aquivo TXT.
+  static u_int32_t coluna  		    = 1;  // Coluna do arquivo TXT.
+  static u_int32_t linha 	 		    = 1;  // Linha do aquivo TXT.
+  char             str_atual[STR_LEN] = ""; // String de retorno como lexema (VAR,NUM,STR).
 
 	while (1){   // WHILE TRUE machine state
 		char_atual = fgetc(file_src);
@@ -231,7 +231,7 @@ go_error:
 						continue;
 				}
 				ungetc(char_atual, file_src);
-				STC_Token.ttoken = NUMint;
+				STC_Token.ttoken = NUMINT;
 				break;
 		}//	if (state_machine == NUM)
 
@@ -241,7 +241,7 @@ go_error:
 						continue;
 				}
 				ungetc(char_atual, file_src);
-				STC_Token.ttoken = NUMfloat;
+				STC_Token.ttoken = NUMFLOAT;
 				break;
 		}//	if (state_machine == NUMF)
 
