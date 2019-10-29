@@ -3,6 +3,6 @@ int main(){
     scan("Nota primeira prova: ", p1);
     scan("Nota segunda prova: ", p2);
     media = (p1+p2)/2;
-    print("A media das notas é: ", media);
+    print("\nA media das notas é: ", media);
     return 0;
 }

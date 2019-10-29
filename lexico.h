@@ -1,4 +1,4 @@
-#ifndef  _LEXICO_
+#ifndef   _LEXICO_
 #define   _LEXICO_
 
 #include <stdio.h>
@@ -22,7 +22,7 @@ typedef enum{
 		ABRICHAV = 19 , FECHACHAV , INT      , FLOAT    , BREAK      , CONTINUE   ,
 		FOR      = 25 , NUMINT    , NUMFLOAT , WHILE    , IF         , ELSE       ,
 		OR       = 31 , NOT       , MENOR    , MAIOR    , MENORIGUAL , MAIORIGUAL ,
-		NIGUAL   = 37 , RETURN    ,
+		NIGUAL   = 37 , RETURN
 }TToken;
 
 /*
@@ -46,8 +46,10 @@ typedef struct{
 
 FILE *file_src;
 
-// 		Função que le um tokem valido ou erro, retorna como estrutura Token
-//			tendo a string e o tipo (Token) dela.
+/*
+		Função que le um tokem valido ou erro, retorna como estrutura Token
+			tendo a string e o tipo (Token) dela.
+*/
 
 Token getToken();
 

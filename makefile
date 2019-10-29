@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-O3 -W
+CFLAGS=-O3 -Wall
 TARGET=interpretador
 HDR=$(wildcard *.h)
 SRC=$(wildcard *.c)

@@ -1,4 +1,4 @@
-#ifndef  _PARSER_
+#ifndef   _PARSER_
 #define   _PARSER_
 
 #include <stdio.h>
@@ -22,7 +22,7 @@ typedef struct{
 
 Token  token_atual;
 
-//Variavel que indica o nivel atual de variaveis
+// Variavel que indica o nivel atual de variaveis
 
 static u_int8_t nivel_variaveis = 0;
 
@@ -31,17 +31,17 @@ static u_int8_t nivel_variaveis = 0;
       a ser compilada.
 */
 
-u_int8_t  type();
-char*     decod_Token(TToken token);
-char*     consome_token(TToken consome);
-char*     busca_variaveis(char* lexema);
-void      error_alloc(char* var, char* func);
-void      deleta_variaveis();
-void      error(TToken consome);
-void      add_id(Token token, u_int8_t tipo);
-void      arglist();
-void      arg();
-void      restoArglist();
+u_int8_t       type();
+char*          decod_Token(TToken token);
+char*          consome_token(TToken consome);
+char*          busca_variaveis(char* lexema);
+void           error_alloc(char* var, char* func);
+void           deleta_variaveis();
+void           error(TToken consome);
+void           add_id(Token token, u_int8_t tipo);
+void           arglist();
+void           arg();
+void           restoArglist();
 t_valuereturns parser();
 t_valuereturns function();
 t_valuereturns declaration();
