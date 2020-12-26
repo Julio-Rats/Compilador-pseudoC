@@ -1,4 +1,6 @@
-# IFMG_TRAB_COMPILADORES
+# Compilado pseudo C
+## Trabalho IFMG - Compiladores.
+
 (FINALIZADO) Compilador implementado na linguagem C, para gramatica nomeada de miniC.
 
 GRAMATICA LL1 DESCRITA NO ARQUIVO "miniC.txt".
