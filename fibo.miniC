@@ -9,16 +9,18 @@ int main(){
 
   int i,a,b,c,d,e;
   scan("Numero do termo Fibonacci: ", d);
-  if (d<=0){
-      print("\nERROR não existe termo negativo ou nulo ");
+  if (d<1)
+  {
+      print("\n[ERROR]: Não existe termo negativo ou nulo ");
       return -1;
   }
   b = 1;
-  for(i=1;i<d;i=i+1){
+  for(i=0;i<d;i=i+1)
+  {
       a = a+b;
       b = e;
       e = a;
   }
-  print("\nO termo ",d," Fibonacci é = ",a);
+  print("\nO termo ",d,"º Fibonacci é igual: ",a);
   return -1;
 }

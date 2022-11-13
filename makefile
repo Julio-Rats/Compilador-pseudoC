@@ -1,25 +1,36 @@
-CC=gcc
-CFLAGS=-O3 -Wall
-TARGET=interpretador
-HDR=$(wildcard *.h)
-SRC=$(wildcard *.c)
-OBJ=$(SRC:.c=.o)
-HDRC=$(HDR:.h=.h.gch)
+CC = gcc
 
-all: $(TARGET) clean
+MYFLAGS = -g -O2 -Wall -Wno-char-subscripts
+
+TARGET = interpretador
+
+OBJFILES = lexico.o main.o parser.o virtualmachine.o
+
+default: all
+
+all:
+	$(MAKE) $(TARGET)
+
 # regras para gerar o executavel
-$(TARGET) : .h .c
-	$(CC) -o $@ $(OBJ) $(CFLAGS)
+$(TARGET): $(OBJFILES) 
+	$(CC) -o $(TARGET) $(OBJFILES) 
 
 # regras de compilação
-.c:
-	$(CC) -c $(SRC) $(CFLAGS)
+lexico.o: lexico.c lexico.h
+	$(CC) -c $(MYFLAGS) lexico.c  
 
-.h:
-	$(CC) -c $(HDR) $(CFLAGS)
+main.o: main.c parser.h lexico.h virtualmachine.h
+	$(CC) -c $(MYFLAGS) main.c  
+
+parser.o: parser.c parser.h lexico.h virtualmachine.h
+	$(CC) -c $(MYFLAGS) parser.c  
+
+virtualmachine.o: virtualmachine.c virtualmachine.h
+	$(CC) -c $(MYFLAGS) virtualmachine.c  
 
 clean:
-	rm -rf $(OBJ) $(HDRC)
+	rm -f *.o
+	rm $(TARGET)
 
 clear:
-	rm -rf $(TARGET)
+	rm -f *.o
