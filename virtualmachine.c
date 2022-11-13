@@ -9,7 +9,8 @@ void flush_in()
 {
     int ch;
 
-    while ((ch = getchar()) != EOF && ch != '\n');
+    while ((ch = getchar()) != EOF && ch != '\n')
+        ;
 }
 
 char *genLabel()
@@ -393,7 +394,9 @@ void add_var(char *id, double value, byte type)
             return;
         }
 
-    listVarambiente = realloc(listVarambiente, sizeof(t_varambiente) * (++lenVarambiente));
+    listVarambiente = (t_varambiente *)realloc(listVarambiente, sizeof(t_varambiente) * (++lenVarambiente));
+    if (!listVarambiente)
+        error_alloc("listVarambiente", "add_var");
     listVarambiente[lenVarambiente - 1].id_var = id;
     listVarambiente[lenVarambiente - 1].type = type;
 
