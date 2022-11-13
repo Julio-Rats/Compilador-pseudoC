@@ -5,6 +5,13 @@ t_variable *listVariables = NULL;
 
 void error_alloc(char *var, char *func);
 
+void flush_in()
+{
+    int ch;
+
+    while ((ch = getchar()) != EOF && ch != '\n');
+}
+
 char *genLabel()
 {
     static unsigned int inc = 0;
@@ -245,6 +252,7 @@ void exec(Quad *lista)
                 strcpy(str, interpretaStr(str));
                 printf("%s", str);
                 int return_scanf = scanf("%f", &valor);
+                flush_in();
                 if (!return_scanf)
                 {
                     printf("[ERROR]: Falha ao receber entrada de dados\n");
@@ -258,7 +266,6 @@ void exec(Quad *lista)
                 printf("\nFinalizado: retorno %.f\n", trunc(getValue(aux->param3)));
                 return;
             }
-            fflush(stdout);
             break;
 
         case 15:
