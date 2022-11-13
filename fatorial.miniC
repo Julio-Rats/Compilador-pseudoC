@@ -1,3 +1,10 @@
+/*==============================
+**  Programa exemplo em miniC
+**
+** - Fatorial
+**==============================
+*/
+
 int main(){
   int fat,n,valor;
 

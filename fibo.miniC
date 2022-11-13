@@ -7,20 +7,21 @@
 
 int main(){
 
-  int i,a,b,c,d,e;
-  scan("Numero do termo Fibonacci: ", d);
-  if (d<1)
+  int i,n,a,b,c;
+  scan("Numero do termo Fibonacci: ", n);
+  if (n<1)
   {
       print("\n[ERROR]: Não existe termo negativo ou nulo ");
       return -1;
   }
+  a = 0;
   b = 1;
-  for(i=0;i<d;i=i+1)
+  for(i=0;i<n;i=i+1)
   {
+      c = a;
       a = a+b;
-      b = e;
-      e = a;
+      b = c;
   }
-  print("\nO termo ",d,"º Fibonacci é igual: ",a);
-  return -1;
+  print("\nO termo ",n,"º Fibonacci é igual: ",a);
+  return 0;
 }

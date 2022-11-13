@@ -86,8 +86,8 @@ typedef struct
 {
 	TToken ttoken;
 	char lexema[STR_LEN];
-	u_int32_t linha;
-	u_int32_t coluna;
+	unsigned int linha;
+	unsigned int coluna;
 } Token;
 
 FILE *file_src;

@@ -13,11 +13,11 @@ Token getToken()
 {
 	Token STC_Token;					// ED de retorno do analisador léxico.
 	char char_atual;					// Caracter lido armazenado aq.
-	u_int8_t flag_coment = 0;			// Verifica fim de comentario.
-	u_int8_t str_length = 0;			// Comprimento atual da str_atual.
+	short int flag_coment = 0;			// Verifica fim de comentario.
+	unsigned int str_length = 0;			// Comprimento atual da str_atual.
 	MachineState state_machine = START; // Estado de Maquina da autômato.
-	static u_int32_t coluna = 1;		// Coluna do arquivo TXT.
-	static u_int32_t linha = 1;			// Linha do aquivo TXT.
+	static unsigned int coluna = 1;		// Coluna do arquivo TXT.
+	static unsigned int linha = 1;		// Linha do aquivo TXT.
 	char str_atual[STR_LEN] = "";		// String de retorno como lexema (VAR,NUM,ST   R).
 
 	while (1)

@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
 {
 	if (argc < 2)
 	{
-		fprintf(stderr, "Erro de paramentro:\n\nExemplo: %s <Input>\n\nInput: Arquivo fonte para compilação\n\n", argv[0]);
+		fprintf(stderr, "Uso do Interpretador:\n%s <Input>\n\nInput: Arquivo fonte para compilação\n\n", argv[0]);
 		exit(7);
 	}
 

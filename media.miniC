@@ -1,8 +1,19 @@
+/*==============================
+**  Programa exemplo em miniC
+**
+** - Media entre 2 valores
+**==============================
+*/
+
 int main(){
     float p1,p2,media;
+
     scan("Nota primeira prova: ", p1);
     scan("Nota segunda prova: ", p2);
+
     media = (p1+p2)/2;
+
     print("\nA media das notas é: ", media);
+    
     return 0;
 }

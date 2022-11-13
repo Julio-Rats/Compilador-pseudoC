@@ -1,7 +1,7 @@
 #include "parser.h"
 
 // Variavel que indica o nivel atual de variaveis
-static u_int8_t nivel_variaveis = 0;
+static unsigned int nivel_variaveis = 0;
 
 void error_alloc(char *var, char *func)
 {
@@ -11,8 +11,8 @@ void error_alloc(char *var, char *func)
 
 void error(TToken consome)
 {
-    printf("\nError de Compilação:  Linha %d, Coluna %d", token_atual.linha, token_atual.coluna);
-    printf("\n\tEsperava \'%s\' Mas Foi Recebido \'%s\'\n\n", decod_Token(consome), token_atual.lexema);
+    fprintf(stderr,"\nError na compilação erro sintático Linha %d, Coluna %d.\n", token_atual.linha, token_atual.coluna);
+    fprintf(stderr,"Esperava \'%s\', porém foi recebido \'%s\'.\n\n", decod_Token(consome), token_atual.lexema);
     fclose(file_src);
     exit(ERROR_CONSUME);
 }
@@ -67,7 +67,7 @@ void arglist()
 
 void arg()
 {
-    u_int8_t tipo = type();
+    int tipo = type();
     Token token = token_atual;
     consome_token(IDENT);
     if (nivel_variaveis != 1)
@@ -86,7 +86,7 @@ void restoArglist()
     }
 }
 
-u_int8_t type()
+byte type()
 {
     if (token_atual.ttoken == INT)
     {
@@ -151,7 +151,7 @@ t_valuereturns stmt(char *jump_cont, char *jump_exit)
     {
         if (!jump_cont)
         {
-            fprintf(stderr, "\nERROR: DECLARAÇÃO INVALIDA 'CONTINUE', LINHA %d coluna %d\n\n", token_atual.linha, token_atual.coluna);
+            fprintf(stderr, "\nError: Declaração invalida do 'CONTINUE', Linha %d Coluna %d.\n\n", token_atual.linha, token_atual.coluna);
             fclose(file_src);
             exit(ERROR_DECLAR);
         }
@@ -164,7 +164,7 @@ t_valuereturns stmt(char *jump_cont, char *jump_exit)
     {
         if (!jump_cont)
         {
-            fprintf(stderr, "\nERROR: DECLARAÇÃO INVALIDA 'BREAK', LINHA %d coluna %d\n\n", token_atual.linha, token_atual.coluna);
+            fprintf(stderr, "\nError: Declaração invalida do 'BREAK', Linha %d Coluna %d.\n\n", token_atual.linha, token_atual.coluna);
             fclose(file_src);
             exit(ERROR_DECLAR);
         }
@@ -190,13 +190,13 @@ t_valuereturns stmt(char *jump_cont, char *jump_exit)
 t_valuereturns declaration()
 {
     t_valuereturns declar;
-    u_int8_t vartype = type();
+    int vartype = type();
     declar = identList(vartype);
     consome_token(PONTVIRG);
     return declar;
 }
 
-t_valuereturns identList(u_int8_t vartype)
+t_valuereturns identList(byte vartype)
 {
     t_valuereturns identL;
     Token atual = token_atual;
@@ -213,7 +213,7 @@ t_valuereturns identList(u_int8_t vartype)
     return identL;
 }
 
-t_valuereturns restoIdentList(u_int8_t vartype)
+t_valuereturns restoIdentList(byte vartype)
 {
     t_valuereturns restI;
     restI.listQuad = NULL;
@@ -293,7 +293,9 @@ t_valuereturns ioStmt()
         consome_token(IDENT);
         if (!busca_variaveis(atual.lexema))
         {
-            fprintf(stderr, "\nError de Compilação: Linha %d, Coluna %d\n\tUso de Variavel Não Declarada,  Variavel = \'%s\'\n\n", atual.linha, atual.coluna, atual.lexema);
+            fprintf(stderr, "\nError na compilação erro sintático Linha %d, Coluna %d.\
+            \nUso de variável não declarada,  variável = \'%s\'.\n\n",
+                    atual.linha, atual.coluna, atual.lexema);
             fclose(file_src);
             exit(ERROR_COMP);
         }
@@ -353,7 +355,9 @@ t_valuereturns out()
         consome_token(IDENT);
         if (!busca_variaveis(atual.lexema))
         {
-            fprintf(stderr, "\nError de Compilação: Linha %d, Coluna %d\n\tUso de Variavel Não Declarada,  Variavel = \'%s\'\n\n", atual.linha, atual.coluna, atual.lexema);
+            fprintf(stderr, "\nError na compilação erro sintático Linha %d, Coluna %d.\
+            \nUso de variável não declarada,  variável = \'%s\'.\n\n",
+                    atual.linha, atual.coluna, atual.lexema);
             fclose(file_src);
             exit(ERROR_COMP);
         }
@@ -468,7 +472,7 @@ t_valuereturns atrib()
     aux2 = restoAtrib(aux.NameResult);
     if (!((aux.bool_leftValue) || (aux2.bool_leftValue)))
     {
-        fprintf(stderr, "\nErro de Atribuição de Variavel, linha %d coluna %d\n\n",
+        fprintf(stderr, "\nErro de atribuição de variável, Linha %d Coluna %d.\n\n",
                 token_atual.linha, token_atual.coluna);
         fclose(file_src);
         exit(ERROR_COMP);
@@ -815,8 +819,8 @@ t_valuereturns fator()
     else if (token_atual.ttoken == IDENT)
     {
         char *lexema = consome_token(IDENT);
-        u_int32_t flag = 1;
-        for (u_int32_t i = 0; i < lenVariables; i++)
+        int flag = 1;
+        for (int i = 0; i < lenVariables; i++)
             if (strcmp(lexema, listVariables[i].id_var) == 0)
             {
                 flag = 0;
@@ -825,7 +829,9 @@ t_valuereturns fator()
 
         if (flag)
         {
-            fprintf(stderr, "\nError de Compilação: Linha %d, Coluna %d\n\tAtribuição A Uma Variavel Não Declarada,  Variavel = \'%s\'\n\n", token_atual.linha, token_atual.coluna, lexema);
+            fprintf(stderr, "\nError na compilação erro sintático Linha %d, Coluna %d.\
+            \nUso de variável não declarada,  variável = \'%s\'.\n\n",
+                    token_atual.linha, token_atual.coluna, lexema);
             fclose(file_src);
             exit(ERROR_COMP);
         }
@@ -971,7 +977,7 @@ char *decod_Token(TToken token)
     return aux;
 }
 
-void add_id(Token token, u_int8_t tipo)
+void add_id(Token token, byte tipo)
 {
     if (lenVariables == 0)
     {
@@ -990,11 +996,13 @@ void add_id(Token token, u_int8_t tipo)
     }
     else
     {
-        for (u_int32_t i = 0; i < lenVariables; i++)
+        for (int i = 0; i < lenVariables; i++)
             if (strcmp(token.lexema, listVariables[i].id_var) == 0)
                 if (nivel_variaveis == listVariables[i].nivel)
                 {
-                    fprintf(stderr, "\nError de Compilação: Linha %d, Coluna %d\n\tMúltipla Declaração de Variavel,  Variavel = \'%s\'\n\n", token.linha, token.coluna, token.lexema);
+                    fprintf(stderr, "\nError na Compilação erro sintático Linha %d, Coluna %d.\
+                        \nMúltiplas declarações da variável: \'%s\'.\n\n",
+                            token.linha, token.coluna, token.lexema);
                     fclose(file_src);
                     exit(ERROR_COMP);
                 }
@@ -1015,7 +1023,7 @@ void add_id(Token token, u_int8_t tipo)
 
 void deleta_variaveis()
 {
-    u_int32_t cont = 0;
+    unsigned int cont = 0;
     while (cont < lenVariables)
     {
         if ((listVariables[cont].nivel == nivel_variaveis) && (nivel_variaveis != 1))
@@ -1036,7 +1044,7 @@ char *busca_variaveis(char *lexema)
     char *var = (char *)malloc(sizeof(char) * (STR_LEN));
     if (!var)
         error_alloc("var", "busca_variaveis");
-    for (int32_t i = lenVariables - 1; i >= 0; i--)
+    for (int i = lenVariables - 1; i >= 0; i--)
         if (strcmp(listVariables[i].id_var, lexema) == 0)
         {
             sprintf(var, "_%d%s", listVariables[i].nivel, listVariables[i].id_var);

@@ -17,7 +17,7 @@ typedef struct
 {
       Quad *listQuad;
       char *NameResult;
-      u_int8_t bool_leftValue : 1;
+      byte bool_leftValue;
 } t_valuereturns;
 
 // Variavel que controla o analisador lexico, com o lexema e Tipo de Token atual.
@@ -29,22 +29,22 @@ Token token_atual;
       a ser compilada.
 */
 
-u_int8_t type();
+byte type();
 char *decod_Token(TToken token);
 char *consome_token(TToken consome);
 char *busca_variaveis(char *lexema);
 void error_alloc(char *var, char *func);
 void deleta_variaveis();
 void error(TToken consome);
-void add_id(Token token, u_int8_t tipo);
+void add_id(Token token, byte tipo);
 void arglist();
 void arg();
 void restoArglist();
 t_valuereturns parser();
 t_valuereturns function();
 t_valuereturns declaration();
-t_valuereturns identList(u_int8_t vartype);
-t_valuereturns restoIdentList(u_int8_t vartype);
+t_valuereturns identList(byte vartype);
+t_valuereturns restoIdentList(byte vartype);
 t_valuereturns bloco(char *jump_cont, char *jump_exit);
 t_valuereturns stmtList(char *jump_cont, char *jump_exit);
 t_valuereturns stmt(char *jump_cont, char *jump_exit);

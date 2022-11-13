@@ -6,7 +6,11 @@
 #include <string.h>
 #include <math.h>
 
+#define ERROR_INPUT 6
+
 typedef struct quad_t Quad;
+
+typedef unsigned char byte;
 
 struct quad_t
 {
@@ -20,25 +24,25 @@ struct quad_t
 typedef struct
 {
     char *id_var;
-    u_int8_t nivel;
-    u_int8_t type : 1;
+    int nivel;
+    byte type;
 } t_variable;
-
-extern u_int32_t lenVariables;
-extern t_variable *listVariables;
 
 typedef struct
 {
     char *id_var;
     double value_numeric;
-    u_int8_t type : 1;
+    byte type;
 } t_varambiente;
 
-u_int32_t lenVarambiente;
+extern unsigned int lenVariables;
+extern t_variable *listVariables;
+
+unsigned int lenVarambiente;
 t_varambiente *listVarambiente;
 
 void exec();
-void add_var(char *id, double value, u_int8_t type);
+void add_var(char *id, double value, byte type);
 float getValue(char *lexema);
 Quad *copyQuad(Quad *list);
 Quad *addQuad(Quad *destine, Quad *Source);
@@ -48,7 +52,7 @@ char *genLabel();
 char *genTemp();
 char *removeaspas(char *str);
 char *interpretaStr(char *str);
-u_int8_t getType(char *lexema);
-int8_t decod_inst(char *opcode);
+byte getType(char *lexema);
+int decod_inst(char *opcode);
 
 #endif
