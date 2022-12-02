@@ -1,7 +1,7 @@
 # Compilador pseudoC
 ## Trabalho IFMG - Compiladores.
 
-(FINALIZADO) Compilador implementado em linguagem C, para gramatica nomeada de miniC.
+(FINALIZADO) Compilador/Interpretador implementado em linguagem C, para gramatica nomeada de miniC.
 
 GRAMATICA LL1 DESCRITA NO ARQUIVO "miniC.txt".
 
